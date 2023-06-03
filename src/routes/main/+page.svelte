@@ -2,7 +2,6 @@
     <title>Main</title>
 </svelte:head>
 
-
 <div class="main">
     <div class="selections">
 
