@@ -18,3 +18,17 @@ export interface IStep {
     intensities?: number;
     timecode: number;
 }
+
+export interface IModule {
+    name: string;
+    title: string;
+    range?: {
+        min: number;
+        max: number;
+        value: number;
+    }
+    color?: {
+        value: string;
+    }
+}
+
