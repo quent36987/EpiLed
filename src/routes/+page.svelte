@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { VAGUE_MODULES } from '../annimations/vague/vague';
+	import { VAGUE_MODULES } from '../annimations/basics/wave';
 	import PropertiesBar from '../annimations/components/PropertiesBar.svelte';
 
 	let modules = VAGUE_MODULES;

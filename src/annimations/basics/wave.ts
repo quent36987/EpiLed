@@ -3,7 +3,7 @@ import { getDecoupePart } from '../utils/decoupe';
 import { generateColorWave } from '../utils/couleurs';
 /* eslint-disable */
 
-interface IVagueProps {
+interface IWaveProps {
 	frequency: number;
 	nbColor: number;
 	firstColor: string;
@@ -13,7 +13,7 @@ interface IVagueProps {
 	rotation: number;
 }
 
-export function VagueAnnimation(leds: ILed[], props: IVagueProps): IAnimation {
+export function WaveAnnimation(leds: ILed[], props: IWaveProps): IAnimation {
 	const animation: IAnimation = {
 		frequence: props.frequency,
 		steps: []
@@ -39,7 +39,7 @@ export function VagueAnnimation(leds: ILed[], props: IVagueProps): IAnimation {
 	return animation;
 }
 
-export const VAGUE_MODULES: IModule[] = [
+export const WAVE_MODULES: IModule[] = [
 	{
 		title: 'Nombre de couleurs',
 		name: 'nbColor',
