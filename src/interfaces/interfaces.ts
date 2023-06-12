@@ -7,7 +7,7 @@ export interface ILed {
 }
 
 export interface IAnimation {
-    frequence: number;
+    frequency: number;
     steps: IStep[];
 }
 

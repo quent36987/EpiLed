@@ -5,9 +5,9 @@ interface IVagueProps {
 	color: string;
 }
 
-export function UniformeAnnimation(leds: ILed[], props: IVagueProps): IAnimation {
+export function createUniformAnimation(leds: ILed[], props: IVagueProps): IAnimation {
 	const animation: IAnimation = {
-		frequence: 0,
+		frequency: 0,
 		steps: []
 	};
 
@@ -20,7 +20,7 @@ export function UniformeAnnimation(leds: ILed[], props: IVagueProps): IAnimation
 	return animation;
 }
 
-export const UNIFORME_MODULES: IModule[] = [
+export const UNIFORM_MODULES: IModule[] = [
 	{
 		title: 'Couleur',
 		name: 'color',

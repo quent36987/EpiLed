@@ -3,7 +3,7 @@ export interface IPosObject {
     position: [number, number];
 }
 
-export function getDecoupePart<T extends IPosObject>(objects: T[], nbDecoupe: number, part: number, rotation: number = 0): T[] {
+export function getSegmentedPart<T extends IPosObject>(objects: T[], nbDecoupe: number, part: number, rotation: number = 0): T[] {
     let rotationRadians = rotation * Math.PI / 180;
 
     let rotatedValues = objects.map(obj => obj.position[0] * Math.cos(rotationRadians) + obj.position[1] * Math.sin(rotationRadians));

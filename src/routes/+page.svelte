@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { VAGUE_MODULES } from '../annimations/basics/wave';
 	import PropertiesBar from '../annimations/components/PropertiesBar.svelte';
+	import { WAVE_MODULES } from '../annimations/index.js';
 
-	let modules = VAGUE_MODULES;
+	let modules = WAVE_MODULES;
 
 	let createConfig = (modules) => {
 		let config = {};

@@ -13,7 +13,12 @@
 			{module.range.min}
 		</div>
 
-		<Range id="range-minmax" min="0" max="10" bind:value={module.range.value} />
+		<Range
+			id="range-minmax"
+			min={module.range.min}
+			max={module.range.max}
+			bind:value={module.range.value}
+		/>
 
 		<div class="slider_number">
 			{module.range.max}

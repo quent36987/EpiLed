@@ -1,35 +1,35 @@
 import type { IAnimation, ILed, IModule } from '../../interfaces/interfaces';
-import { getDecoupePart } from '../utils/decoupe';
 import { generateColorWave } from '../utils/couleurs';
-/* eslint-disable */
+import { getSegmentedPart } from '../utils/decoupe';
 
 interface IWaveProps {
 	frequency: number;
-	nbColor: number;
+	colorCount: number;
 	firstColor: string;
 	endColor: string;
-	nbPart: number;
-	nbColorBetweenStep: number;
+	partCount: number;
+	colorCountBetweenStep: number;
 	rotation: number;
 }
 
-export function WaveAnnimation(leds: ILed[], props: IWaveProps): IAnimation {
+export function createWaveAnimation(leds: ILed[], props: IWaveProps): IAnimation {
 	const animation: IAnimation = {
-		frequence: props.frequency,
+		frequency: props.frequency,
 		steps: []
 	};
 
-	const colors = generateColorWave(props.nbColor, props.firstColor, props.endColor);
+	const colors = generateColorWave(props.colorCount, props.firstColor, props.endColor);
 
-	for (let part = 0; part < props.nbPart; part++) {
-		const ledInPart = getDecoupePart(leds, props.nbPart, part, props.rotation);
+	for (let part = 0; part < props.partCount; part++) {
+		const ledsInPart = getSegmentedPart(leds, props.partCount, part, props.rotation);
 
 		let time = 0;
-		for (let c = 0; c < props.nbColor; c++) {
+
+		for (let c = 0; c < props.colorCount; c++) {
 			animation.steps.push({
-				ids: ledInPart.map((led) => led.id),
+				ids: ledsInPart.map((led) => led.id),
 				timecode: time,
-				colors: colors[(c + part * props.nbColorBetweenStep) % props.nbColor]
+				colors: colors[(c + part * props.colorCountBetweenStep) % props.colorCount]
 			});
 
 			time += 1;
@@ -41,8 +41,8 @@ export function WaveAnnimation(leds: ILed[], props: IWaveProps): IAnimation {
 
 export const WAVE_MODULES: IModule[] = [
 	{
-		title: 'Nombre de couleurs',
-		name: 'nbColor',
+		title: 'Color Count',
+		name: 'colorCount',
 		range: {
 			min: 1,
 			max: 20,
@@ -50,22 +50,22 @@ export const WAVE_MODULES: IModule[] = [
 		}
 	},
 	{
-		title: 'Couleur de départ',
+		title: 'Start Color',
 		name: 'firstColor',
 		color: {
 			value: '#ff0000'
 		}
 	},
 	{
-		title: 'Couleur de fin',
+		title: 'End Color',
 		name: 'endColor',
 		color: {
 			value: '#0000ff'
 		}
 	},
 	{
-		title: 'Nombre de partie',
-		name: 'nbPart',
+		title: 'Part Count',
+		name: 'partCount',
 		range: {
 			min: 1,
 			max: 10,
@@ -73,8 +73,8 @@ export const WAVE_MODULES: IModule[] = [
 		}
 	},
 	{
-		title: 'Nombre de couleur entre chaque partie',
-		name: 'nbColorBetweenStep',
+		title: 'Color Count Between Steps',
+		name: 'colorCountBetweenStep',
 		range: {
 			min: 1,
 			max: 10,
@@ -91,7 +91,7 @@ export const WAVE_MODULES: IModule[] = [
 		}
 	},
 	{
-		title: 'Fréquence',
+		title: 'Frequency',
 		name: 'frequency',
 		range: {
 			min: 1,

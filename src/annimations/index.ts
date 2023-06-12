@@ -1,4 +1,4 @@
-import { WaveAnnimation, WAVE_MODULES } from './basics/wave';
-import { UniformeAnnimation, UNIFORME_MODULES } from './basics/uniforme';
+import { createWaveAnimation, WAVE_MODULES } from './basics/wave';
+import { createUniformAnimation, UNIFORM_MODULES } from './basics/uniforme';
 
-export { WaveAnnimation, WAVE_MODULES, UniformeAnnimation, UNIFORME_MODULES };
+export { createWaveAnimation, WAVE_MODULES, createUniformAnimation, UNIFORM_MODULES };
