@@ -6,12 +6,12 @@
 	}
 
 	#header {
-	  grid-column: 1 / span 3;
+
 	  background-color: #ddd;
 	}
 
 	#left {
-	  grid-row: 2 / span 2;
+		width: min-content;
 	  background-color: #eee;
 	}
 
@@ -34,6 +34,7 @@
   <script lang="ts">
 	  import PropertiesBar from '../annimations/components/PropertiesBar.svelte';
 	  import { WAVE_MODULES } from '../annimations/index.js';
+	  import ListBlockSlector from "$lib/components/ListBlockSlector.svelte";
 
 	  let modules = WAVE_MODULES;
 
@@ -52,9 +53,13 @@
   </script>
 
   <div id="app">
-	<div id="header">Entête</div>
-	<div id="left">Gauche</div>
+
 	  <div class="flex-row">
+	<div id="left">
+
+		<ListBlockSlector/>
+	</div>
+
 
 	<div id="middle" >Milieu</div>
 	<div id="right" >
