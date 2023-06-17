@@ -18,12 +18,12 @@
 <style>
 	.block {
 		padding: var(--spacing-s);
-		border-right: black 1px solid;
+		border-right: solid black 1px;
 		border-bottom: black 1px solid;
 	}
 
 	.block.isSelected {
-		border-right: none;
+		border-right: solid white 1px;
 		background-color: white;
 	}
 

@@ -1,12 +1,12 @@
 <script lang="ts">
-
-
     import {supabase} from "../../supabaseClient";
 
     let loading = false
     let email = ''
 
     const handleLogin = async () => {
+        if(!email) return alert('You must enter an email')
+
         try {
             loading = true
             const { error } = await supabase.auth.signInWithOtp({ email })
@@ -22,10 +22,8 @@
     }
 </script>
 
-<div class="row flex-center flex">
-    <div class="col-6 form-widget" aria-live="polite">
-        <h1 class="header">Supabase + Svelte</h1>
-        <p class="description">Sign in via magic link with your email below</p>
+<div class="flex-col center">
+        <div class="title">Sign in via magic link with your email below</div>
         <form class="form-widget" on:submit|preventDefault="{handleLogin}">
             <div>
                 <label for="email">Email</label>
@@ -43,5 +41,45 @@
                 </button>
             </div>
         </form>
-    </div>
+
 </div>
+
+<style>
+    .title{
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    label {
+        display: block;
+        margin: 5px 0;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+    }
+
+    input {
+        width: 100%;
+        border-radius: 5px;
+        border: #4075a6 1px solid;
+        padding: 8px;
+        font-size: 0.9rem;
+        min-width: 300px
+    }
+
+    button,
+    .button {
+        color: #dddddd;
+        border: 1px solid #dddddd;
+        background-color: #4075a6;
+        display: inline-block;
+        text-align: center;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        text-align: center;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+    }
+
+</style>

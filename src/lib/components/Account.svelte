@@ -70,7 +70,8 @@
     }
 </script>
 
-<form on:submit|preventDefault={updateProfile} class="form-widget">
+<form on:submit|preventDefault={updateProfile} class="form">
+    <div class="title">Mon profile</div>
     <div>Email: {session.user.email}</div>
     <div>
         <label for="username">Name</label>
@@ -85,7 +86,53 @@
             {loading ? 'Saving ...' : 'Update profile'}
         </button>
     </div>
-    <button type="button" class="button block" on:click={() => supabase.auth.signOut()}>
-        Sign Out
-    </button>
 </form>
+
+<style>
+    .form{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 2rem;
+    }
+
+    .title{
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    label {
+        display: block;
+        margin: 5px 0;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+    }
+
+    input {
+        width: 100%;
+        border-radius: 5px;
+        border: #4075a6 1px solid;
+        padding: 8px;
+        font-size: 0.9rem;
+        min-width: 300px
+    }
+
+    button,
+    .button {
+        margin-top: var(--spacing-m);
+        color: #dddddd;
+        border: 1px solid #dddddd;
+        background-color: #4075a6;
+        display: inline-block;
+        text-align: center;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        text-align: center;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+    }
+
+</style>

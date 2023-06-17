@@ -2,11 +2,6 @@
 	import PropertiesBar from '../annimations/components/PropertiesBar.svelte';
 	import { WAVE_MODULES } from '../annimations/index.js';
 	import ListBlockSlector from '$lib/components/ListBlockSlector.svelte';
-	// import type { Session } from '@supabase/supabase-js';
-	// import { onMount } from 'svelte';
-	// import { supabase } from '../supabaseClient';
-	// import Auth from '$lib/components/Auth.svelte';
-	// import Account from '$lib/components/Account.svelte';
 
 	let modules = WAVE_MODULES;
 
@@ -19,27 +14,10 @@
 		return config;
 	};
 
-	// let session: Session | null;
-	// onMount(() => {
-	// 	supabase.auth.getSession().then(({ data }) => {
-	// 		session = data.session;
-	// 	});
-	//
-	// 	supabase.auth.onAuthStateChange((_event, _session) => {
-	// 		session = _session;
-	// 	});
-	// });
+
 </script>
 
 <div id="app">
-	<!--	  <div class="container" style="padding: 50px 0 100px 0">-->
-	<!--		  {#if !session}-->
-	<!--			  <Auth />-->
-	<!--		  {:else}-->
-	<!--			  <Account {session} />-->
-	<!--		  {/if}-->
-	<!--	  </div>-->
-
 	<div class="flex-row">
 		<div id="left">
 			<ListBlockSlector />
