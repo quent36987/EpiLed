@@ -3,6 +3,7 @@
 	import { supabase } from '../supabaseClient.js';
 	import { onMount } from 'svelte';
 	import { session } from '../store/store.js';
+	import Icon from '$lib/images/logo.png';
 
 	let my_session = null;
 	session.subscribe((value) => {
@@ -26,34 +27,36 @@
 	}
 </script>
 
-<Navbar let:hidden let:toggle>
-	<NavBrand href="/">
-		<img
-			src="https://flowbite.com/docs/images/logo.svg"
-			class="mr-3 h-6 sm:h-9"
-			alt="Flowbite Logo"
-		/>
-		<span class="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
-			Flowbite
-		</span>
-	</NavBrand>
-	<div class="flex md:order-2">
-		{#if my_session}
-			<Button size="sm" on:click={signOut}>Sign Out</Button>
-		{:else}
-			<Button size="sm" href="/login">Sign In</Button>
-		{/if}
+<div class="header">
+	<Navbar let:hidden let:toggle>
+		<NavBrand href="/">
+			<img src={Icon} class="mr-3 h-6 sm:h-10" alt="Logo" />
+			<span class="self-center whitespace-nowrap text-xl font-semibold dark:text-white">
+				EPI-LED
+			</span>
+		</NavBrand>
+		<div class="flex md:order-2">
+			{#if my_session}
+				<Button size="sm" on:click={signOut}>Sign Out</Button>
+			{:else}
+				<Button size="sm" href="/login">Sign In</Button>
+			{/if}
 
-		<NavHamburger on:click={toggle} />
-	</div>
-	<NavUl {hidden} class="order-1">
-		<NavLi href="/" active={true}>Home</NavLi>
-		<NavLi href="/about">About</NavLi>
-		<NavLi href="/services">Services</NavLi>
-		<NavLi href="/pricing">Pricing</NavLi>
-		<NavLi href="/login">Mon profile</NavLi>
-	</NavUl>
-</Navbar>
+			<NavHamburger on:click={toggle} />
+		</div>
+		<NavUl {hidden} class="order-1">
+			<NavLi href="/">Home</NavLi>
+			<NavLi href="/devices">Devices</NavLi>
+			<NavLi href="/about">About</NavLi>
+			<NavLi href="/shop">Shop</NavLi>
+			<NavLi href="/login">Profile</NavLi>
+		</NavUl>
+	</Navbar>
+</div>
 
 <style>
+	.header {
+		background-color: #fff;
+		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+	}
 </style>

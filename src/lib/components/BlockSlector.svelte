@@ -22,6 +22,10 @@
 		border-bottom: black 1px solid;
 	}
 
+	.block:hover {
+		opacity: 0.7;
+	}
+
 	.block.isSelected {
 		border-right: solid white 1px;
 		background-color: white;

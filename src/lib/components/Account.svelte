@@ -2,6 +2,8 @@
     import { onMount } from "svelte";
     import type { AuthSession } from "@supabase/supabase-js";
     import {supabase} from "../../supabaseClient";
+    import Avatar from "$lib/components/Avatar.svelte";
+
 
 
     export let session: AuthSession;
@@ -71,8 +73,9 @@
 </script>
 
 <form on:submit|preventDefault={updateProfile} class="form">
-    <div class="title">Mon profile</div>
-    <div>Email: {session.user.email}</div>
+    <div class="title">Profile</div>
+    <div class="email">Email: {session.user.email}</div>
+    <Avatar bind:url="{avatarUrl}" size="{150}" on:upload="{updateProfile}" />
     <div>
         <label for="username">Name</label>
         <input id="username" type="text" bind:value={username} />
@@ -99,6 +102,12 @@
 
     .title{
         font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    .email{
+        font-size: 1rem;
         font-weight: 600;
         margin-bottom: 1rem;
     }
