@@ -8,14 +8,18 @@
 <div class="app">
 	<Header />
 
-	<slot />
-
+	<div class="body">
+		<slot />
+	</div>
 </div>
 
 <style>
 	.app {
 		display: flex;
 		flex-direction: column;
-		min-height: 100vh;
+	}
+
+	.body {
+		overflow: auto;
 	}
 </style>

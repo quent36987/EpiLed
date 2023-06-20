@@ -6,7 +6,7 @@
 	export let modules: IModule[];
 </script>
 
-<div>
+<div class="property-bar">
 	{#each modules as module}
 		<div>
 			{#if module.range}
@@ -20,3 +20,8 @@
 		</div>
 	{/each}
 </div>
+
+<style>
+
+
+</style>

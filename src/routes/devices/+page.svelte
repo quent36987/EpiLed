@@ -3,6 +3,7 @@
     import PropertiesBar from '../../annimations/components/PropertiesBar.svelte';
     import Button from '../../lib/components/common/Button.svelte';
     import { WAVE_MODULES } from '../../annimations';
+    import Tabs from "./Tabs.svelte";
 
     let modules = WAVE_MODULES;
     let switchState = false;
@@ -41,7 +42,9 @@
 
         <div id="middle">Milieu</div>
         <div id="right">
-            <PropertiesBar bind:modules />
+            <Tabs>
+                <PropertiesBar slot="dashboard" bind:modules />
+            </Tabs>
         </div>
     </div>
     <div id="footer">
@@ -55,7 +58,6 @@
 
 <style>
     #app {
-        height: 100vh;
         width: 100vw;
     }
 
@@ -72,6 +74,8 @@
     #right {
         background-color: #ddd;
         flex-grow: 1;
+        padding: var(--spacing-s);
+        max-width: 40vw;
     }
 
     #footer {
