@@ -4,6 +4,7 @@
     import Button from '../../lib/components/common/Button.svelte';
     import { WAVE_MODULES } from '../../annimations';
     import Tabs from "./Tabs.svelte";
+	import { Footer, FooterCopyright, FooterLinkGroup, FooterLink } from 'flowbite-svelte';
 
     let modules = WAVE_MODULES;
     let switchState = false;
@@ -35,29 +36,35 @@
 </script>
 
 <div id="app">
-    <div id="left">
-        <ListBlockSlector />
-    </div>
-    <div class="content">
-        <div class="flex-row">
-            <div id="middle">Milieu</div>
-            <div id="right">
-                <Tabs>
-                    <PropertiesBar slot="dashboard" bind:modules />
-                </Tabs>
-            </div>
-        </div>
-        <div id="footer">
-            <Button text={switchState ? "Off" : "On"} handleClick={handleSwitch} />
-            <Button text="Load" handleClick={handleLoad} />
-            <Button text="Delete" handleClick={handleDelete} />
-            <Button text="Save" handleClick={handleSave} />
-        </div>
-    </div>
-</div>
+	<div id="left">
+	  <ListBlockSlector />
+	</div>
+	<div class="content">
+	  <div class="flex-row">
+		<div id="middle">Milieu</div>
+		<div id="right">
+		  <Tabs>
+			<PropertiesBar slot="dashboard" bind:modules />
+		  </Tabs>
+		</div>
+	  </div>
+	  <div id="footer">
+        <Footer style="width: 100%; display: flex; justify-content: space-between;">
+          <div style="display: flex; align-items: center;">
+            <FooterCopyright href="/" by="Flowbite™" year={2022} />
+            <FooterLinkGroup ulClass="flex flex-wrap items-center mt-3 text-sm text-gray-500 dark:text-gray-400 sm:mt-0">
+              <FooterLink href="/">About</FooterLink>
+              <FooterLink href="/">Privacy Policy</FooterLink>
+              <FooterLink href="/">Licensing</FooterLink>
+              <FooterLink href="/">Contact</FooterLink>
+            </FooterLinkGroup>
+          </div>
+        </Footer>
+      </div>
+	</div>
+  </div>
 
-
-<style>
+  <style>
     #app {
         width: 100vw;
         height: 100vh;
@@ -94,16 +101,16 @@
     }
 
     #footer {
-        grid-column: 2 / span 2;
         background-color: #eee;
         display: flex;
         justify-content: space-around;
         align-items: center;
         padding: 30px 5px;
-        height: 10px;
+        height: 60px;
     }
 
     #footer Button {
         background: none !important;
     }
 </style>
+
