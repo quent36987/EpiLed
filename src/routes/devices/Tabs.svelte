@@ -11,7 +11,7 @@
 		</div>
 
 		<div class="animation-list">
-			<Card padding="none" size="lg">
+
 				<div class="flex-row gap-l card">
 					<h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Smooth wave</h5>
 					<a href="/" class="inline-flex items-center text-primary-600 hover:underline">
@@ -19,8 +19,7 @@
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
 					</a>
 				</div>
-			</Card>
-			<Card padding="none" size="lg">
+
 				<div class="flex-row gap-l card">
 					<h5 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-white">Smooth wave</h5>
 					<a href="/" class="inline-flex items-center text-primary-600 hover:underline">
@@ -28,7 +27,7 @@
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 ml-2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>
 					</a>
 				</div>
-			</Card>
+
 
 		</div>
 	</TabItem>
@@ -77,6 +76,8 @@
 	.card{
 		padding: var(--spacing-m);
 		justify-content: space-between;
+		background-color: #c95d5d;
+		border-radius: var(--border-radius);
 	}
 
 	.card:hover{
