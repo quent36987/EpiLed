@@ -35,23 +35,24 @@
 </script>
 
 <div id="app">
-    <div class="flex-row">
-        <div id="left">
-            <ListBlockSlector />
-        </div>
-
-        <div id="middle">Milieu</div>
-        <div id="right">
-            <Tabs>
-                <PropertiesBar slot="dashboard" bind:modules />
-            </Tabs>
-        </div>
+    <div id="left">
+        <ListBlockSlector />
     </div>
-    <div id="footer">
-        <Button text={switchState ? "Off" : "On"} handleClick={handleSwitch} />
-        <Button text="Load" handleClick={handleLoad} />
-        <Button text="Delete" handleClick={handleDelete} />
-        <Button text="Save" handleClick={handleSave} />
+    <div class="content">
+        <div class="flex-row">
+            <div id="middle">Milieu</div>
+            <div id="right">
+                <Tabs>
+                    <PropertiesBar slot="dashboard" bind:modules />
+                </Tabs>
+            </div>
+        </div>
+        <div id="footer">
+            <Button text={switchState ? "Off" : "On"} handleClick={handleSwitch} />
+            <Button text="Load" handleClick={handleLoad} />
+            <Button text="Delete" handleClick={handleDelete} />
+            <Button text="Save" handleClick={handleSave} />
+        </div>
     </div>
 </div>
 
@@ -59,11 +60,25 @@
 <style>
     #app {
         width: 100vw;
+        height: 100vh;
+        display: flex;
     }
 
     #left {
         width: min-content;
-        background-color: #eee;
+        height: 100%;
+        background-color: white;
+    }
+
+    .content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .flex-row {
+        flex-grow: 1;
+        display: flex;
     }
 
     #middle {
@@ -84,7 +99,8 @@
         display: flex;
         justify-content: space-around;
         align-items: center;
-        padding: 100px 5px;
+        padding: 30px 5px;
+        height: 10px;
     }
 
     #footer Button {
