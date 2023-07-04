@@ -1,9 +1,18 @@
+export interface IDevice {
+    id: string;
+    connected: {
+        id: string;
+        pin: number;
+    }[];
+}
+
 export interface ILed {
     id: number;
     forme: string;
     position: [number, number];
     rotation: number;
     pin: number[];
+
 }
 
 export interface IAnimation {

@@ -1,6 +1,7 @@
 <script>
     import { onMount } from 'svelte';
-    import { createScene } from '../lib/scene.js';
+    import {createScene} from "$lib/scene";
+
 
     let el;
 
