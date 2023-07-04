@@ -16,6 +16,7 @@
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/kit": "^1.5.0",
 		"@types/cookie": "^0.5.1",
+		"@types/three": "^0.152.1",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
 		"autoprefixer": "^10.4.14",
@@ -40,7 +41,9 @@
 		"@popperjs/core": "^2.11.8",
 		"@supabase/supabase-js": "^2.25.0",
 		"classnames": "^2.3.2",
+		"d3": "^7.8.5",
 		"flowbite": "^1.6.5",
-		"flowbite-svelte": "^0.36.5"
+		"flowbite-svelte": "^0.36.5",
+		"three": "^0.154.0"
 	}
 }
