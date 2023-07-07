@@ -1,6 +1,6 @@
 import type { IDevice } from '../interfaces/interfaces';
 
-const devices: IDevice[] = [
+export const devices: IDevice[] = [
 	{
 		id: '1',
 		connected: [
