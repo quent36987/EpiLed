@@ -2,7 +2,7 @@ import type { IAnimation, ILed, IModule } from '../../interfaces/interfaces';
 import { generateColorWave } from '../utils/couleurs';
 import { getSegmentedPart } from '../utils/decoupe';
 
-interface IWaveProps {
+export interface IWaveProps {
 	frequency: number;
 	colorCount: number;
 	firstColor: string;
@@ -45,8 +45,8 @@ export const WAVE_MODULES: IModule[] = [
 		name: 'colorCount',
 		range: {
 			min: 1,
-			max: 20,
-			value: 10
+			max: 100,
+			value: 70
 		}
 	},
 	{
@@ -60,7 +60,7 @@ export const WAVE_MODULES: IModule[] = [
 		title: 'End Color',
 		name: 'endColor',
 		color: {
-			value: '#0000ff'
+			value: '#ff003b'
 		}
 	},
 	{
@@ -68,7 +68,7 @@ export const WAVE_MODULES: IModule[] = [
 		name: 'partCount',
 		range: {
 			min: 1,
-			max: 10,
+			max: 20,
 			value: 5
 		}
 	},
@@ -78,7 +78,7 @@ export const WAVE_MODULES: IModule[] = [
 		range: {
 			min: 1,
 			max: 10,
-			value: 5
+			value: 1
 		}
 	},
 	{
@@ -87,7 +87,7 @@ export const WAVE_MODULES: IModule[] = [
 		range: {
 			min: 0,
 			max: 360,
-			value: 0
+			value: 28
 		}
 	},
 	{

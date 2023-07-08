@@ -24,7 +24,7 @@ export const devic: IDevice[] = [
 
 
 
-export const devices: IDevice[] = [
+export const deviceslol: IDevice[] = [
 	{
 		id: '1',
 		connected: [
