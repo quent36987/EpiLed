@@ -20,7 +20,7 @@ export function createWaveAnimation(leds: ILed[], props: IWaveProps): IAnimation
 
 	const colors = generateColorWave(props.colorCount, props.firstColor, props.endColor);
 
-	for (let part = 0; part < props.partCount; part++) {
+	for (let part = 0; part <= props.partCount; part++) {
 		const ledsInPart = getSegmentedPart(leds, props.partCount, part, props.rotation);
 
 		let time = 0;

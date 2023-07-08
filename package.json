@@ -45,6 +45,7 @@
 		"flowbite": "^1.6.5",
 		"flowbite-svelte": "^0.36.5",
 		"three": "^0.154.0",
+		"three-stdlib": "^2.23.13",
 		"three.interactive": "^1.7.0"
 	}
 }

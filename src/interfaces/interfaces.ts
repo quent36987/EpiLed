@@ -7,12 +7,11 @@ export interface IDevice {
 }
 
 export interface ILed {
-    id: number;
+    id: string;
     forme: string;
     position: [number, number];
     rotation: number;
     pin: number[];
-
 }
 
 export interface IAnimation {
@@ -21,7 +20,7 @@ export interface IAnimation {
 }
 
 export interface IStep {
-    ids: number[];
+    ids: string[];
     leds?: Array<{ number: number; color: string; intensity: number }>;
     colors?: string;
     intensities?: number;

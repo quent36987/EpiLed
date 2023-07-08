@@ -23,10 +23,56 @@ export class Triangle extends THREE.Mesh {
 
         // Fill parents fields
         super.geometry = new THREE.ShapeGeometry(this.shape);
-        super.material =  new THREE.MeshBasicMaterial( {color: 0xf00f00, side: THREE.DoubleSide} );
+
+        const id = parseInt(this.triId, 10);
+
+        const colors = [
+            'red',
+            'green',
+            'blue',
+            'yellow',
+            'orange',
+            'purple',
+            'pink',
+            'red',
+            'grey',
+            'red',
+            'grey',
+            'blue',
+            'yellow'
+        ]
+
+        super.material =  new THREE.MeshBasicMaterial( {
+            color : colors[id], side: THREE.DoubleSide
+        } );
+
+
+        // add a small cercle in the middle of the vec1
+        const circle = new THREE.CircleGeometry( 0.1, 32 );
+        const material = new THREE.MeshBasicMaterial( { color: colors[id] } );
+        const circleMesh = new THREE.Mesh( circle, material );
+
+        //betwen vec1 and vec2
+        const x = (p1.x + p2.x) / 2;
+        const y = (p1.y + p2.y) / 2;
+        circleMesh.position.set(x, y, 0);
+        super.add(circleMesh);
+
+
+        //betwen vec2 and vec3
+        const circle2 = new THREE.CircleGeometry( 0.04, 32 );
+        const x2 = (p2.x + p3.x) / 2;
+        const y2 = (p2.y + p3.y) / 2;
+        const circleMesh2 = new THREE.Mesh( circle2, material );
+        circleMesh2.position.set(x2, y2, 0);
+        super.add(circleMesh2);
+
+
+
+
+
         super.updateMorphTargets();
+
+
     }
-
-
-
 }

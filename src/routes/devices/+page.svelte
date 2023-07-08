@@ -5,6 +5,16 @@
     import Tabs from './Tabs.svelte';
     import { Button, ButtonGroup } from 'flowbite-svelte';
 
+    import { onMount } from 'svelte';
+    import {createScene} from "$lib/scene";
+
+
+    let el;
+
+    onMount(() => {
+        createScene(el, test);
+    });
+
     let modules = WAVE_MODULES;
     let switchState = false;
 
@@ -32,6 +42,22 @@
     const handleSave = () => {
         console.log('Save button clicked');
     };
+
+    const test = [
+        {
+            timecode:1,
+            color:'red',
+        },
+        {
+            timecode:2,
+            color:'green',
+        },
+        {
+            timecode:3,
+            color:'blue',
+        }
+    ]
+
 </script>
 
 <div id="app">
@@ -41,7 +67,12 @@
     <div class="content">
         <div class="flex-row">
             <div id="middle" class="flex-col">
-                <div class="flex-1">oui</div>
+                <div class="flex-1">
+                    <div id="container" class="width-100 height-100">
+                        <canvas  bind:this={el} />
+                    </div>
+
+                </div>
 
                 <div class="buttons">
                     <ButtonGroup class="py-4 button-group">
@@ -58,6 +89,7 @@
                     </ButtonGroup>
                 </div>
             </div>
+
             <div id="right">
                 <Tabs>
                     <PropertiesBar slot="dashboard" bind:modules />
@@ -93,6 +125,7 @@
     #middle {
         background-color: #f8f8f8;
         flex-grow: 3;
+
     }
 
     #right {

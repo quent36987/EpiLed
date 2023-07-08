@@ -16,7 +16,7 @@ export function getSegmentedPart<T extends IPosObject>(objects: T[], nbDecoupe: 
 
     let partObjects = objects.filter(obj => {
         let rotatedValue = obj.position[0] * Math.cos(rotationRadians) + obj.position[1] * Math.sin(rotationRadians);
-        return rotatedValue >= partMin && rotatedValue < partMax;
+        return rotatedValue >= partMin && rotatedValue <= partMax;
     });
 
     return partObjects;
