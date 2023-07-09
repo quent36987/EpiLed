@@ -7,16 +7,17 @@
 	import Canvas from './Canvas.svelte';
 	import { onMount } from 'svelte';
 	import { Triangle } from '$lib/mesh/triangle';
-	import { deviceslol } from '../../data/mockdata';
-	import type { IAnimation, IDevice, ILed } from '../../interfaces/interfaces';
+	import { ANIMATIONS, deviceslol } from '../../data/mockdata';
+	import type { IStepAnimation, IDevice, ILed } from '../../interfaces/interfaces';
 	import { createLeds, createTriangles } from './utils';
 	import type { IWaveProps } from '../../annimations/basics/wave';
 
 	let modules = WAVE_MODULES;
-	let animation: IAnimation;
+	let animation: IStepAnimation;
 	let leds: ILed[] = [];
 	let devices: IDevice[] = deviceslol;
 	let triangles: Triangle[] = [];
+	let animations = ANIMATIONS;
 
 	let createConfig = (modules) => {
 		let config = {};
@@ -31,6 +32,7 @@
 
 	const init = () => {
 		triangles = createTriangles(devices);
+		triangles[0].setUnlight();
 		leds = createLeds(triangles);
 	};
 
@@ -78,7 +80,7 @@
 			</div>
 
 			<div id="right">
-				<Tabs>
+				<Tabs bind:animations>
 					<PropertiesBar slot="dashboard" bind:modules />
 				</Tabs>
 			</div>

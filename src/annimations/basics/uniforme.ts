@@ -1,12 +1,12 @@
 /* eslint-disable */
-import type { IAnimation, ILed, IModule } from '../../interfaces/interfaces';
+import type { IStepAnimation, ILed, IModule } from '../../interfaces/interfaces';
 
 interface IVagueProps {
 	color: string;
 }
 
-export function createUniformAnimation(leds: ILed[], props: IVagueProps): IAnimation {
-	const animation: IAnimation = {
+export function createUniformAnimation(leds: ILed[], props: IVagueProps): IStepAnimation {
+	const animation: IStepAnimation = {
 		frequency: 0,
 		steps: []
 	};

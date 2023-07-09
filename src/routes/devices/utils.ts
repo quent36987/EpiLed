@@ -34,39 +34,38 @@ export function findVectorTriangle(vec1: Vector2, vec2: Vector2, vecOpose: Vecto
 	return vecOpose.distanceTo(vec3a) < vecOpose.distanceTo(vec3b) ? vec3b : vec3a;
 }
 
-export function rec(devices: IDevice[], triangles: Triangle[], device: IDevice) {
+export function _createTriangles(devices: IDevice[], triangles: Triangle[], device: IDevice) {
 	for (const dev of device.connected) {
-		const results = triangles.filter((x) => x.triId === dev.id);
+		const hasTriangle= triangles.filter((x) => x.triId === dev.id).length === 0;
 
-		if (results.length === 0) {
-			const parent = triangles.filter((x) => x.triId === device.id)[0];
-			const pin = parent.getPin(dev.pin);
+		if (hasTriangle) {
+			const deviceTriangle = triangles.filter((x) => x.triId === device.id)[0];
+			const deviceVecs = deviceTriangle.getPin(dev.pin);
 
-			const vec3 = findVectorTriangle(pin[0], pin[1], pin[2]);
+			const vec3 = findVectorTriangle(deviceVecs[0], deviceVecs[1], deviceVecs[2]);
+			let newVecs = [deviceVecs[0], deviceVecs[1], vec3];
 
-			const pin2 = devices
+			const devPin = devices
 				.filter((x) => x.id === dev.id)[0]
 				.connected.filter((x) => x.id === device.id)[0].pin;
 
-			let vecs = [pin[0], pin[1], vec3];
-
-			switch (pin2) {
+			switch (devPin) {
 				case 3:
-					vecs = [vec3, pin[0], pin[1]];
+					newVecs = [vec3, deviceVecs[0], deviceVecs[1]];
 					break;
 				case 1:
-					vecs = [pin[0], pin[1], vec3];
+					newVecs = [deviceVecs[0], deviceVecs[1], vec3];
 					break;
 				case 2:
-					vecs = [pin[1], vec3, pin[0]];
+					newVecs = [deviceVecs[1], vec3, deviceVecs[0]];
 					break;
 			}
 
-			const triangle = new Triangle(dev.id, vecs[1], vecs[0], vecs[2]);
+			const triangle = new Triangle(dev.id, newVecs[1], newVecs[0], newVecs[2]);
 			triangles.push(triangle);
 
 			const new_device = devices.filter((x) => x.id === dev.id)[0];
-			if (new_device) rec(devices, triangles, new_device);
+			if (new_device) _createTriangles(devices, triangles, new_device);
 		}
 	}
 }
@@ -85,7 +84,7 @@ export function createTriangles(devices: IDevice[]) {
 
 	triangles.push(firstTriangle);
 
-	rec(devices, triangles, firstDevice);
+	_createTriangles(devices, triangles, firstDevice);
 
 	return triangles;
 }

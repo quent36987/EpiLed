@@ -1,7 +1,7 @@
-import type { IAnimation, IStep } from '../../interfaces/interfaces';
+import type {IStep, IStepAnimation} from "../../interfaces/interfaces";
 
-export function updateAnnimation(oldAnnimation: IAnimation, newAnnimation: IAnimation) {
-	const newLedIds = new Set<number>(newAnnimation.steps.flatMap((step) => step.ids));
+export function updateAnnimation(oldAnnimation: IStepAnimation, newAnnimation: IStepAnimation) {
+	const newLedIds = new Set<string>(newAnnimation.steps.flatMap((s) => s.ids));
 
 	for (const oldStep of oldAnnimation.steps) {
 		const oldStepIds = oldStep.ids.filter((id) => !newLedIds.has(id));

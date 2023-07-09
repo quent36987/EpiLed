@@ -7,6 +7,7 @@ export class Triangle extends THREE.Mesh {
     vec1: Vector2
     vec2: Vector2
     vec3: Vector2
+    unlight: boolean;
 
     constructor(triID: string, p1: Vector2, p2: Vector2, p3: Vector2) {
         super();
@@ -14,6 +15,7 @@ export class Triangle extends THREE.Mesh {
         this.vec1 = p1;
         this.vec2 = p2;
         this.vec3 = p3;
+        this.unlight = false;
 
         this.shape = new THREE.Shape();
         this.shape.moveTo(p1.x, p1.y);
@@ -28,6 +30,10 @@ export class Triangle extends THREE.Mesh {
         } );
 
         super.updateMorphTargets();
+    }
+
+    setUnlight(){
+        // set the dline of the triangle to red
     }
 
     getPin(pin: number) {

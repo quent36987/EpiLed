@@ -3,9 +3,9 @@
 	import * as THREE from 'three';
 	import { Triangle } from '$lib/mesh/triangle';
 	import { InteractionManager } from 'three.interactive';
-	import type { IAnimation } from '../../interfaces/interfaces';
+	import type { IStepAnimation } from '../../interfaces/interfaces';
 
-	export let animation: IAnimation;
+	export let animation: IStepAnimation;
 	export let triangles: Triangle[];
 
 	let contenaire;

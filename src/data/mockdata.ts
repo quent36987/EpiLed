@@ -1,28 +1,27 @@
-import type {IDevice, ILed} from '../interfaces/interfaces';
+import type { IAnimation, IDevice } from '../interfaces/interfaces';
+import {
+	createUniformAnimation,
+	createWaveAnimation,
+	UNIFORM_MODULES,
+	WAVE_MODULES
+} from '../annimations';
 
-export const devic: IDevice[] = [
+export const ANIMATIONS: IAnimation[] = [
 	{
-		id: '1',
-		connected: [
-			{
-				id: '2',
-				pin:2
-			}
-		]
+		id: 0,
+		modules: WAVE_MODULES,
+		function: createWaveAnimation,
+		title: 'Wave',
+		ledsId: []
 	},
 	{
-		id: '2',
-		connected: [
-			{
-				id: '1',
-				pin: 2
-			}
-		]
+		id: 1,
+		modules: UNIFORM_MODULES,
+		function: createUniformAnimation,
+		title: 'Uniforme',
+		ledsId: []
 	}
 ];
-
-
-
 
 export const deviceslol: IDevice[] = [
 	{

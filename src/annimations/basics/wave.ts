@@ -1,4 +1,4 @@
-import type { IAnimation, ILed, IModule } from '../../interfaces/interfaces';
+import type { IStepAnimation, ILed, IModule } from '../../interfaces/interfaces';
 import { generateColorWave } from '../utils/couleurs';
 import { getSegmentedPart } from '../utils/decoupe';
 
@@ -12,8 +12,8 @@ export interface IWaveProps {
 	rotation: number;
 }
 
-export function createWaveAnimation(leds: ILed[], props: IWaveProps): IAnimation {
-	const animation: IAnimation = {
+export function createWaveAnimation(leds: ILed[], props: IWaveProps): IStepAnimation {
+	const animation: IStepAnimation = {
 		frequency: props.frequency,
 		steps: []
 	};
