@@ -25,7 +25,7 @@
 		</div>
 	</div>
 
-	<p>Value: {module.range.value}</p>
+	<p class="value">Value: {module.range.value}</p>
 </div>
 
 <style>
@@ -38,5 +38,9 @@
 	}
 	.slider_number {
 		font-size: 0.8rem;
+	}
+
+	.value{
+		font-size: 0.7rem;
 	}
 </style>

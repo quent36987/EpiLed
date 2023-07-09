@@ -1,13 +1,16 @@
 <script lang="ts">
-	import type { IModule } from '../../interfaces/interfaces';
 	import RangeBar from './RangeBar.svelte';
 	import ColorBar from './ColorBar.svelte';
+	import type { IAnimation } from '../../interfaces/interfaces';
 
-	export let modules: IModule[];
+	export let animation: IAnimation;
 </script>
 
 <div class="property-bar">
-	{#each modules as module}
+	<div class="title">
+		{animation.title}
+	</div>
+	{#each animation.modules as module}
 		<div>
 			{#if module.range}
 				<RangeBar bind:module />
@@ -22,6 +25,8 @@
 </div>
 
 <style>
-
-
+	.title {
+		font-size: 1.2em;
+		font-weight: bold;
+	}
 </style>

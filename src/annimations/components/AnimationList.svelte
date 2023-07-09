@@ -1,10 +1,13 @@
 <script lang="ts">
 	import type { IAnimation } from '../../interfaces/interfaces';
+	import { createEventDispatcher } from 'svelte';
 
 	export let animations: IAnimation[];
 
+	const dispatch = createEventDispatcher();
+
 	const onAnimationClick = (animation: IAnimation) => {
-		console.log('animation click', animation.title, animation.id);
+		dispatch('animationClick', animation.id);
 	};
 </script>
 

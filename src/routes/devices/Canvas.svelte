@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 	import * as THREE from 'three';
 	import { Triangle } from '$lib/mesh/triangle';
 	import { InteractionManager } from 'three.interactive';
@@ -19,11 +19,12 @@
 	let interactionManager: InteractionManager;
 	let renderer: THREE.WebGLRenderer;
 
+	const dispatch = createEventDispatcher();
 
 	onMount(() => {
 		scene = new THREE.Scene();
+		scene.background = new THREE.Color('#e3e2e2');
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-		camera.position.z = 8;
 		window.addEventListener('resize', resize);
 
 		renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
@@ -38,10 +39,16 @@
 			return;
 		}
 
-		for (const tri of triangles) {
-			scene.add(tri);
+		interactionManager = new InteractionManager(renderer, camera, renderer.domElement);
+
+		for (const triangle of triangles) {
+			scene.add(triangle);
+			interactionManager.add(triangle);
+
+			triangle.addEventListener('click', (target) => {
+				dispatch('triangleClick', target.target.triId);
+			});
 		}
-		//interactionManager = new InteractionManager(renderer, camera, renderer.domElement);
 
 		const maxX = Math.max(...triangles.map((x) => Math.max(x.vec1.x, x.vec2.x, x.vec3.x)));
 		const minX = Math.min(...triangles.map((x) => Math.min(x.vec1.x, x.vec2.x, x.vec3.x)));
@@ -50,6 +57,9 @@
 
 		camera.position.x = (maxX + minX) / 2;
 		camera.position.y = (maxY + minY) / 2;
+
+		let maxDistance = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2));
+		camera.position.z = maxDistance;
 	};
 
 	$: {
@@ -59,7 +69,9 @@
 
 	$: {
 		animation;
-		maxTimecode = animation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b));
+		if (animation && animation.steps.length > 0) {
+			maxTimecode = animation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b));
+		}
 	}
 
 	const animate = () => {
@@ -102,3 +114,6 @@
 <div id="container" bind:this={contenaire} class="width-100 height-100">
 	<canvas bind:this={canvas} />
 </div>
+
+<style>
+</style>

@@ -1,16 +1,14 @@
 <script lang="ts">
 	import ListBlockSlector from '$lib/components/ListBlockSlector.svelte';
-	import PropertiesBar from '../../annimations/components/PropertiesBar.svelte';
-	import { createWaveAnimation, WAVE_MODULES } from '../../annimations';
+	import { WAVE_MODULES } from '../../annimations';
 	import Tabs from './Tabs.svelte';
 	import { Button, ButtonGroup } from 'flowbite-svelte';
 	import Canvas from './Canvas.svelte';
 	import { onMount } from 'svelte';
 	import { Triangle } from '$lib/mesh/triangle';
 	import { ANIMATIONS, deviceslol } from '../../data/mockdata';
-	import type { IStepAnimation, IDevice, ILed } from '../../interfaces/interfaces';
+	import type { IStepAnimation, IDevice, ILed, IAnimation } from '../../interfaces/interfaces';
 	import { createLeds, createTriangles } from './utils';
-	import type { IWaveProps } from '../../annimations/basics/wave';
 
 	let modules = WAVE_MODULES;
 	let animation: IStepAnimation;
@@ -18,6 +16,9 @@
 	let devices: IDevice[] = deviceslol;
 	let triangles: Triangle[] = [];
 	let animations = ANIMATIONS;
+
+	let status = 'play';
+	let selectedAnimation: IAnimation | undefined = undefined;
 
 	let createConfig = (modules) => {
 		let config = {};
@@ -32,7 +33,6 @@
 
 	const init = () => {
 		triangles = createTriangles(devices);
-		triangles[0].setUnlight();
 		leds = createLeds(triangles);
 	};
 
@@ -42,14 +42,45 @@
 	});
 
 	const update = () => {
-		animation = createWaveAnimation(leds, createConfig(modules) as IWaveProps);
+		const allAnimations: IStepAnimation = {
+			frequency: 10,
+			steps: []
+		};
+
+		for (const animation of animations) {
+			if (animation.leds.length > 0) {
+				const anim = animation.function(animation.leds, createConfig(animation.modules));
+
+				allAnimations.steps.push(...anim.steps);
+			}
+		}
+
+		animation = allAnimations;
 	};
 
 	$: {
-		console.log('e');
 		modules;
-		update();
+		if (status === 'play') update();
 	}
+
+	const play = () => {
+		status = 'play';
+		update();
+	};
+
+	const edit = () => {
+		status = 'edit';
+	};
+
+	const onTriangleClick = (events) => {
+		const led = leds.find((led) => led.id === events.detail);
+
+		if (led && selectedAnimation) selectedAnimation.leds.push(led);
+	};
+
+	const onAnimationClick = (events) => {
+		selectedAnimation = animations.find((animation) => animation.id === events.detail);
+	};
 </script>
 
 <div id="app">
@@ -60,7 +91,7 @@
 		<div class="flex-row">
 			<div id="middle" class="flex-col">
 				<div class="flex-1">
-					<Canvas bind:triangles bind:animation />
+					<Canvas bind:triangles bind:animation on:triangleClick={onTriangleClick} />
 				</div>
 
 				<div class="buttons">
@@ -80,9 +111,14 @@
 			</div>
 
 			<div id="right">
-				<Tabs bind:animations>
-					<PropertiesBar slot="dashboard" bind:modules />
-				</Tabs>
+				<div>
+					<ButtonGroup class="py-4 button-group">
+						<Button outline color="green" on:click={play}>Play</Button>
+						<Button outline color="blue" on:click={edit}>Edit Animation</Button>
+						<Button outline color="blue">Edit shape</Button>
+					</ButtonGroup>
+				</div>
+				<Tabs bind:animations on:animationClick={onAnimationClick} />
 			</div>
 		</div>
 	</div>

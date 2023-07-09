@@ -1,10 +1,18 @@
 <script lang="ts">
-	import { Tabs, TabItem, Card } from 'flowbite-svelte';
+	import { Tabs, TabItem } from 'flowbite-svelte';
 	import AlertFilled from 'svelte-ant-design-icons/AlertFilled.svelte';
-	import type {IAnimation} from "../../interfaces/interfaces";
-	import AnimationList from "../../annimations/components/AnimationList.svelte";
+	import type { IAnimation } from '../../interfaces/interfaces';
+	import AnimationList from '../../annimations/components/AnimationList.svelte';
+	import PropertiesBar from '../../annimations/components/PropertiesBar.svelte';
+	import { createEventDispatcher } from 'svelte';
 
-	export let animations : IAnimation[];
+	export let animations: IAnimation[];
+
+	const dispatch = createEventDispatcher();
+
+	const onAnimationClick = (event) => {
+		dispatch('animationClick', event.detail);
+	};
 </script>
 
 <Tabs contentClass>
@@ -14,7 +22,7 @@
 			Animation
 		</div>
 
-		<AnimationList bind:animations />
+		<AnimationList bind:animations on:animationClick={onAnimationClick} />
 	</TabItem>
 	<TabItem>
 		<div slot="title" class="flex items-center gap-2">
@@ -30,7 +38,12 @@
 			>
 			Properties
 		</div>
-		<slot name="dashboard" />
+
+		{#each animations as animation}
+			{#if animation.leds.length > 0}
+				<PropertiesBar slot="dashboard" bind:animation />
+			{/if}
+		{/each}
 	</TabItem>
 	<TabItem>
 		<div slot="title" class="flex items-center gap-2">
@@ -50,5 +63,4 @@
 </Tabs>
 
 <style>
-
 </style>
