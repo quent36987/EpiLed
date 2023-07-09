@@ -1,7 +1,7 @@
 import * as THREE from 'three';
-import type { Vector2 } from 'three';
 import { Triangle } from '$lib/mesh/triangle';
-import type { IDevice } from '../../interfaces/interfaces';
+import type { IDevice, ILed } from '../../interfaces/interfaces';
+import { Vector2 } from 'three';
 
 export function findVectorTriangle(vec1: Vector2, vec2: Vector2, vecOpose: Vector2) {
 	const direction = new THREE.Vector2().subVectors(vec2, vec1).normalize();
@@ -34,30 +34,15 @@ export function findVectorTriangle(vec1: Vector2, vec2: Vector2, vecOpose: Vecto
 	return vecOpose.distanceTo(vec3a) < vecOpose.distanceTo(vec3b) ? vec3b : vec3a;
 }
 
-export function givemepin(triangle: Triangle, pin: number) {
-	switch (pin) {
-		case 1:
-			return [triangle.vec1, triangle.vec2, triangle.vec3];
-		case 2:
-			return [triangle.vec2, triangle.vec3, triangle.vec1];
-		case 3:
-			return [triangle.vec3, triangle.vec1, triangle.vec2];
-		default:
-			return [triangle.vec1, triangle.vec2, triangle.vec3];
-	}
-}
-
 export function rec(devices: IDevice[], triangles: Triangle[], device: IDevice) {
 	for (const dev of device.connected) {
 		const results = triangles.filter((x) => x.triId === dev.id);
 
 		if (results.length === 0) {
 			const parent = triangles.filter((x) => x.triId === device.id)[0];
-			const pin = givemepin(parent, dev.pin);
+			const pin = parent.getPin(dev.pin);
 
 			const vec3 = findVectorTriangle(pin[0], pin[1], pin[2]);
-
-			// FIXME need to look  order of three vector with the devices[]
 
 			const pin2 = devices
 				.filter((x) => x.id === dev.id)[0]
@@ -86,5 +71,42 @@ export function rec(devices: IDevice[], triangles: Triangle[], device: IDevice) 
 	}
 }
 
+export function createTriangles(devices: IDevice[]) {
+	const triangles: Triangle[] = [];
 
+	const firstDevice = devices[0];
 
+	const firstTriangle = new Triangle(
+		firstDevice.id,
+		new Vector2(0, 0),
+		new Vector2(-0.8, 1),
+		findVectorTriangle(new Vector2(0, 0), new Vector2(-0.8, 1), new Vector2(-1, 0))
+	);
+
+	triangles.push(firstTriangle);
+
+	rec(devices, triangles, firstDevice);
+
+	return triangles;
+}
+
+export function createLeds(triangles: Triangle[]) {
+	const leds: ILed[] = [];
+
+	for (const tri of triangles) {
+		const middle = new Vector2(
+			(tri.vec1.x + tri.vec2.x + tri.vec3.x) / 3,
+			(tri.vec1.y + tri.vec2.y + tri.vec3.y) / 3
+		);
+
+		leds.push({
+			id: tri.triId,
+			shape: 'e',
+			position: [middle.x, middle.y],
+			rotation: 0,
+			pin: [1]
+		});
+	}
+
+	return leds;
+}

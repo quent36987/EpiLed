@@ -45,8 +45,8 @@ export const WAVE_MODULES: IModule[] = [
 		name: 'colorCount',
 		range: {
 			min: 1,
-			max: 100,
-			value: 70
+			max: 200,
+			value: 100
 		}
 	},
 	{
@@ -91,7 +91,7 @@ export const WAVE_MODULES: IModule[] = [
 		}
 	},
 	{
-		title: 'Frequency',
+		title: 'Speed',
 		name: 'frequency',
 		range: {
 			min: 1,

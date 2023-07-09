@@ -2,7 +2,6 @@ import * as THREE from "three";
 import type {Vector2} from 'three';
 
 export class Triangle extends THREE.Mesh {
-
     triId: string
     shape: THREE.Shape
     vec1: Vector2
@@ -24,37 +23,23 @@ export class Triangle extends THREE.Mesh {
         // Fill parents fields
         super.geometry = new THREE.ShapeGeometry(this.shape);
 
-        const id = parseInt(this.triId, 10);
-
-        const colors = [
-            'red',
-            'green',
-            'blue',
-            'yellow',
-            'orange',
-            'purple',
-            'pink',
-            'red',
-            'grey',
-            'red',
-            'grey',
-            'blue',
-            'yellow'
-        ]
-
         super.material =  new THREE.MeshBasicMaterial( {
-            color : colors[id], side: THREE.DoubleSide
+            color : 'red', side: THREE.DoubleSide
         } );
 
-
-        // add a small cercle in the middle of the vec1
-        const circle = new THREE.CircleGeometry( 0.1, 32 );
-        const material = new THREE.MeshBasicMaterial( { color: colors[id] } );
-        const circleMesh = new THREE.Mesh( circle, material );
-
-
         super.updateMorphTargets();
+    }
 
-
+    getPin(pin: number) {
+        switch (pin) {
+            case 1:
+                return [this.vec1, this.vec2, this.vec3];
+            case 2:
+                return [this.vec2, this.vec3, this.vec1];
+            case 3:
+                return [this.vec3, this.vec1, this.vec2];
+            default:
+                return [this.vec1, this.vec2, this.vec3];
+        }
     }
 }

@@ -5,28 +5,32 @@
 	import { InteractionManager } from 'three.interactive';
 	import type { IAnimation } from '../../interfaces/interfaces';
 
-	export let annim: IAnimation;
+	export let animation: IAnimation;
 	export let triangles: Triangle[];
 
-	let el;
-	let maxtime = 0;
+	let contenaire;
+	let canvas;
+
+	let timecode = 0;
+	let maxTimecode = 0;
+
 	let scene: THREE.Scene;
 	let camera: THREE.PerspectiveCamera;
 	let interactionManager: InteractionManager;
 	let renderer: THREE.WebGLRenderer;
-	let timecode = 0;
+
 
 	onMount(() => {
 		scene = new THREE.Scene();
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 		camera.position.z = 8;
-		window.addEventListener('resize', () => resize(document.getElementById('container')));
+		window.addEventListener('resize', resize);
 
-		renderer = new THREE.WebGLRenderer({ antialias: true, canvas: el });
-		resize(document.getElementById('container'));
+		renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
+		resize();
 
 		update();
-        animate();
+		animate();
 	});
 
 	const update = () => {
@@ -49,24 +53,22 @@
 	};
 
 	$: {
-        triangles;
-        console.log('eeeee')
+		triangles;
 		update();
 	}
 
-    $: {
-        annim;
-        console.log('wwww');
-        maxtime = annim.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b));
-    }
+	$: {
+		animation;
+		maxTimecode = animation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b));
+	}
 
 	const animate = () => {
-		if (timecode > maxtime) {
+		if (timecode > maxTimecode) {
 			timecode = 0;
 		}
 
-		if (triangles.length > 0 && triangles[0].material && annim != null) {
-			const step = annim.steps.filter((x) => x.timecode === timecode);
+		if (triangles.length > 0 && triangles[0].material && animation != null) {
+			const step = animation.steps.filter((x) => x.timecode === timecode);
 
 			for (const s of step) {
 				const ids = s.ids;
@@ -85,18 +87,18 @@
 
 		setTimeout(() => {
 			requestAnimationFrame(animate);
-		}, annim.frequency * 10);
+		}, animation.frequency * 10);
 
 		renderer.render(scene, camera);
 	};
 
-	const resize = (contenaire) => {
+	const resize = () => {
 		renderer.setSize(contenaire.clientWidth, contenaire.clientHeight);
 		camera.aspect = contenaire.clientWidth / contenaire.clientHeight;
 		camera.updateProjectionMatrix();
 	};
 </script>
 
-<div id="container" class="width-100 height-100">
-	<canvas bind:this={el} />
+<div id="container" bind:this={contenaire} class="width-100 height-100">
+	<canvas bind:this={canvas} />
 </div>

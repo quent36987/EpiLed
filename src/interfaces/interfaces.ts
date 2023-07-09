@@ -8,7 +8,7 @@ export interface IDevice {
 
 export interface ILed {
     id: string;
-    forme: string;
+    shape: string;
     position: [number, number];
     rotation: number;
     pin: number[];

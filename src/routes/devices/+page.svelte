@@ -4,18 +4,16 @@
 	import { createWaveAnimation, WAVE_MODULES } from '../../annimations';
 	import Tabs from './Tabs.svelte';
 	import { Button, ButtonGroup } from 'flowbite-svelte';
-	import Canvass from './Canvass.svelte';
+	import Canvas from './Canvas.svelte';
 	import { onMount } from 'svelte';
-
 	import { Triangle } from '$lib/mesh/triangle';
 	import { deviceslol } from '../../data/mockdata';
 	import type { IAnimation, IDevice, ILed } from '../../interfaces/interfaces';
-	import {Vector2} from "three";
-	import {findVectorTriangle, rec} from "./utils";
-	import type {IWaveProps} from "../../annimations/basics/wave";
+	import { createLeds, createTriangles } from './utils';
+	import type { IWaveProps } from '../../annimations/basics/wave';
 
-	let modules  = WAVE_MODULES;
-	let annim: IAnimation;
+	let modules = WAVE_MODULES;
+	let animation: IAnimation;
 	let leds: ILed[] = [];
 	let devices: IDevice[] = deviceslol;
 	let triangles: Triangle[] = [];
@@ -31,49 +29,18 @@
 		return config;
 	};
 
-
-
-	const createTriangles = () => {
-		triangles = [];
-		leds = [];
-
-		const firstDevice = devices[0];
-
-		const firstTriangle = new Triangle(
-			firstDevice.id,
-			new Vector2(0, 0),
-			new Vector2(-0.8, 1),
-			findVectorTriangle(new Vector2(0, 0), new Vector2(-0.8, 1), new Vector2(-1, 0))
-		);
-
-		triangles.push(firstTriangle);
-
-		rec(devices, triangles, firstDevice);
-
-		for (const tri of triangles) {
-			const midle = new Vector2(
-				(tri.vec1.x + tri.vec2.x + tri.vec3.x) / 3,
-				(tri.vec1.y + tri.vec2.y + tri.vec3.y) / 3
-			);
-
-			leds.push({
-				id: tri.triId,
-				forme: 'e',
-				position: [midle.x, midle.y],
-				rotation: 0,
-				pin: [1]
-			});
-		}
+	const init = () => {
+		triangles = createTriangles(devices);
+		leds = createLeds(triangles);
 	};
 
 	onMount(() => {
-		createTriangles();
-
-		annim = createWaveAnimation(leds, createConfig(modules) as IWaveProps);
+		init();
+		update();
 	});
 
 	const update = () => {
-		annim = createWaveAnimation(leds, createConfig(modules) as IWaveProps);
+		animation = createWaveAnimation(leds, createConfig(modules) as IWaveProps);
 	};
 
 	$: {
@@ -91,7 +58,7 @@
 		<div class="flex-row">
 			<div id="middle" class="flex-col">
 				<div class="flex-1">
-					<Canvass bind:triangles bind:annim />
+					<Canvas bind:triangles bind:animation />
 				</div>
 
 				<div class="buttons">
