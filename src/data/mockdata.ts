@@ -12,14 +12,12 @@ export const ANIMATIONS: IAnimation[] = [
 		modules: WAVE_MODULES,
 		function: createWaveAnimation,
 		title: 'Wave',
-		leds: []
 	},
 	{
 		id: 1,
 		modules: UNIFORM_MODULES,
 		function: createUniformAnimation,
 		title: 'Uniforme',
-		leds: []
 	}
 ];
 

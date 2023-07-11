@@ -4,15 +4,20 @@
 	import type { IAnimation } from '../../interfaces/interfaces';
 	import AnimationList from '../../annimations/components/AnimationList.svelte';
 	import PropertiesBar from '../../annimations/components/PropertiesBar.svelte';
-	import { createEventDispatcher } from 'svelte';
+	import { createEventDispatcher, onMount } from 'svelte';
 
 	export let animations: IAnimation[];
+	export let animationSelected: IAnimation | undefined;
 
 	const dispatch = createEventDispatcher();
 
 	const onAnimationClick = (event) => {
 		dispatch('animationClick', event.detail);
 	};
+
+	onMount(() => {
+		console.log('anim1', animationSelected);
+	});
 </script>
 
 <Tabs contentClass>
@@ -39,11 +44,7 @@
 			Properties
 		</div>
 
-		{#each animations as animation}
-			{#if animation.leds.length > 0}
-				<PropertiesBar slot="dashboard" bind:animation />
-			{/if}
-		{/each}
+		<PropertiesBar bind:animation={animationSelected} />
 	</TabItem>
 	<TabItem>
 		<div slot="title" class="flex items-center gap-2">

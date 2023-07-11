@@ -3,12 +3,15 @@
 	import { WAVE_MODULES } from '../../annimations';
 	import Tabs from './Tabs.svelte';
 	import { Button, ButtonGroup } from 'flowbite-svelte';
-	import Canvas from './Canvas.svelte';
 	import { onMount } from 'svelte';
 	import { Triangle } from '$lib/mesh/triangle';
 	import { ANIMATIONS, deviceslol } from '../../data/mockdata';
-	import type { IStepAnimation, IDevice, ILed, IAnimation } from '../../interfaces/interfaces';
-	import { createLeds, createTriangles } from './utils';
+	import type { IAnimation, IDevice, ILed, IStepAnimation } from '../../interfaces/interfaces';
+	import { createLeds, createTriangles, findVectorTriangle } from './utils';
+	import CanvasEdit from './CanvasEdit.svelte';
+
+	import Canvas from './Canvas.svelte';
+	import { EState } from '../../interfaces/enums';
 
 	let modules = WAVE_MODULES;
 	let animation: IStepAnimation;
@@ -16,9 +19,10 @@
 	let devices: IDevice[] = deviceslol;
 	let triangles: Triangle[] = [];
 	let animations = ANIMATIONS;
+	let moreTriangles: Triangle[] = [];
 
-	let status = 'play';
-	let selectedAnimation: IAnimation | undefined = undefined;
+	let status: EState = EState.EDITING;
+	let animationSelected: IAnimation | undefined = animations[0];
 
 	let createConfig = (modules) => {
 		let config = {};
@@ -42,44 +46,76 @@
 	});
 
 	const update = () => {
-		const allAnimations: IStepAnimation = {
-			frequency: 10,
-			steps: []
-		};
-
-		for (const animation of animations) {
-			if (animation.leds.length > 0) {
-				const anim = animation.function(animation.leds, createConfig(animation.modules));
-
-				allAnimations.steps.push(...anim.steps);
-			}
+		if (animationSelected) {
+			animation = animationSelected.function(leds, createConfig(animationSelected.modules));
 		}
-
-		animation = allAnimations;
 	};
 
 	$: {
 		modules;
-		if (status === 'play') update();
+		if (status === EState.PLAYING) update();
 	}
 
 	const play = () => {
-		status = 'play';
+		status = EState.PLAYING;
 		update();
 	};
 
+	function getNewTriangles(triangleList) {
+		let newTriangles = [];
+		let id = 5000;
+
+		for (let triangle of triangleList) {
+			// Récupérer les trois triangles potentiels connectés
+			let vec1 = findVectorTriangle(triangle.vec2, triangle.vec3, triangle.vec1);
+			let vec2 = findVectorTriangle(triangle.vec3, triangle.vec1, triangle.vec2);
+			let vec3 = findVectorTriangle(triangle.vec1, triangle.vec2, triangle.vec3);
+
+			// Pour chaque triangle potentiel, vérifiez s'il existe déjà dans la liste de triangles existants ou dans la nouvelle liste
+			let newTriangle1 = new Triangle(id.toString(), triangle.vec2, triangle.vec3, vec1, 'gray');
+			if (!newTriangle1.exists(triangleList) && !newTriangle1.exists(newTriangles)) {
+				newTriangles.push(newTriangle1);
+			}
+			id++;
+
+			let newTriangle2 = new Triangle(id.toString(), triangle.vec3, triangle.vec1, vec2, 'gray');
+			if (!newTriangle2.exists(triangleList) && !newTriangle2.exists(newTriangles)) {
+				newTriangles.push(newTriangle2);
+			}
+			id++;
+			let newTriangle3 = new Triangle(id.toString(), triangle.vec1, triangle.vec2, vec3, 'gray');
+			if (!newTriangle3.exists(triangleList) && !newTriangle3.exists(newTriangles)) {
+				newTriangles.push(newTriangle3);
+			}
+			id++;
+		}
+
+		return newTriangles;
+	}
+
 	const edit = () => {
-		status = 'edit';
-	};
+		status = EState.EDITING;
 
-	const onTriangleClick = (events) => {
-		const led = leds.find((led) => led.id === events.detail);
-
-		if (led && selectedAnimation) selectedAnimation.leds.push(led);
+		moreTriangles = getNewTriangles(triangles);
+		console.log(moreTriangles);
 	};
 
 	const onAnimationClick = (events) => {
-		selectedAnimation = animations.find((animation) => animation.id === events.detail);
+		animationSelected = animations.find((animation) => animation.id === events.detail);
+		update();
+	};
+
+	const onTriangleClick = (events) => {
+		console.log('click', events.detail);
+
+		const triangle = moreTriangles.find((triangle) => triangle.triId === events.detail);
+
+		if (triangle) {
+			console.log('push');
+			triangle.color = 'red';
+			triangles.push(triangle);
+			moreTriangles = getNewTriangles(triangles);
+		}
 	};
 </script>
 
@@ -91,7 +127,11 @@
 		<div class="flex-row">
 			<div id="middle" class="flex-col">
 				<div class="flex-1">
-					<Canvas bind:triangles bind:animation on:triangleClick={onTriangleClick} />
+					{#if status === EState.PLAYING}
+						<Canvas bind:triangles bind:animation />
+					{:else if status === EState.EDITING}
+						<CanvasEdit bind:triangles bind:moreTriangles on:triangleClick={onTriangleClick} />
+					{/if}
 				</div>
 
 				<div class="buttons">
@@ -118,7 +158,7 @@
 						<Button outline color="blue">Edit shape</Button>
 					</ButtonGroup>
 				</div>
-				<Tabs bind:animations on:animationClick={onAnimationClick} />
+				<Tabs bind:animations bind:animationSelected on:animationClick={onAnimationClick} />
 			</div>
 		</div>
 	</div>

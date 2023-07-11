@@ -11,8 +11,6 @@ export interface IAnimation {
 	modules: IModule[];
 	function: (leds: ILed[], props: any) => IStepAnimation;
 	title: string;
-	leds: ILed[];
-	step?: IStepAnimation;
 }
 
 export interface ILed {

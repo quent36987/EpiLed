@@ -3,16 +3,12 @@
 	import * as THREE from 'three';
 	import { Triangle } from '$lib/mesh/triangle';
 	import { InteractionManager } from 'three.interactive';
-	import type { IStepAnimation } from '../../interfaces/interfaces';
 
-	export let animation: IStepAnimation;
 	export let triangles: Triangle[];
+	export let moreTriangles: Triangle[];
 
 	let contenaire;
 	let canvas;
-
-	let timecode = 0;
-	let maxTimecode = 0;
 
 	let scene: THREE.Scene;
 	let camera: THREE.PerspectiveCamera;
@@ -35,7 +31,7 @@
 	});
 
 	const update = () => {
-		if (!triangles || triangles.length === 0) {
+		if (triangles.length === 0) {
 			return;
 		}
 
@@ -45,8 +41,25 @@
 			scene.add(triangle);
 			interactionManager.add(triangle);
 
+			triangle.addEventListener('click', () => {
+				dispatch('triangleClick', triangle.triId);
+			});
+		}
+
+		for (const triangle of moreTriangles) {
+			scene.add(triangle);
+			interactionManager.add(triangle);
+
 			triangle.addEventListener('click', (target) => {
 				dispatch('triangleClick', target.target.triId);
+			});
+
+			triangle.addEventListener('mouseover', (target) => {
+				target.target.material.color.setHex('blue');
+			});
+
+			triangle.addEventListener('mouseout', (target) => {
+				target.target.material.color.set(triangle.color);
 			});
 		}
 
@@ -64,42 +77,15 @@
 
 	$: {
 		triangles;
+		moreTriangles;
 		update();
 	}
 
-	$: {
-		animation;
-		if (animation && animation.steps.length > 0) {
-			maxTimecode = animation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b));
-		}
-	}
-
 	const animate = () => {
-		if (timecode > maxTimecode) {
-			timecode = 0;
+		requestAnimationFrame(animate);
+		if (interactionManager) {
+			interactionManager.update();
 		}
-
-		if (triangles && triangles.length > 0 && triangles[0].material && animation != null) {
-			const step = animation.steps.filter((x) => x.timecode === timecode);
-
-			for (const s of step) {
-				const ids = s.ids;
-
-				for (const id of ids) {
-					const tri = triangles.filter((x) => x.triId === id)[0];
-
-					tri.material = new THREE.MeshBasicMaterial({
-						color: s.colors
-					});
-				}
-			}
-		}
-
-		timecode += 1;
-
-		setTimeout(() => {
-			requestAnimationFrame(animate);
-		}, animation.frequency * 10);
 
 		renderer.render(scene, camera);
 	};
