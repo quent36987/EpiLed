@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Icon from '../images/image.png';
+	import Icon from '../images/test2.png';
 
 	export let title: string;
 	export let isSelected: boolean;

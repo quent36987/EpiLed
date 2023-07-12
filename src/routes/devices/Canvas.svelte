@@ -156,10 +156,45 @@
 
 <div id="container" bind:this={contenaire} class="height-100">
 	<canvas bind:this={canvas} class="test" />
+
+	<div class="zooms">
+		<div class="zoom" on:click={() => (camera.position.z -= 1)}>+</div>
+		<div class="zoom" on:click={() => (camera.position.z += 1)}>-</div>
+	</div>
 </div>
 
 <style>
+	#container {
+		position: relative;
+	}
+
 	.test {
 		border-radius: 25px;
+	}
+
+	.zooms {
+		position: absolute;
+		bottom: 0;
+		right: 10px;
+		display: flex;
+		flex-direction: row;
+		z-index: 5;
+	}
+
+	.zoom {
+		cursor: default;
+		background-color: var(--bg-color);
+		border-radius: 50%;
+		width: 30px;
+		height: 30px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		margin: 5px;
+	}
+
+	.zoom:hover {
+		transform: scale(1.1);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 </style>

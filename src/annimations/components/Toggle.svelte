@@ -47,9 +47,7 @@
 		padding: 0.5rem 1rem;
 		border: none;
 		color: #616161;
-		font-family: Arial, sans-serif;
-		font-size: 1rem;
-		cursor: pointer;
+		cursor: default;
 		border-radius: 0.5rem;
 		margin: 0 0.5rem;
 		transition: all 0.3s;

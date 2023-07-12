@@ -3,7 +3,6 @@
 	import Tabs from './Tabs.svelte';
 	import type { IAnimation, IDevice, ILed, IStepAnimation } from '../../interfaces/interfaces';
 	import { ANIMATIONS, deviceslol } from '../../data/mockdata';
-	import { Button, ButtonGroup } from 'flowbite-svelte';
 	import { Triangle } from '$lib/mesh/triangle';
 	import { createLeds, createTriangles, generateTriangles } from './utils';
 	import { onMount } from 'svelte';
@@ -11,13 +10,13 @@
 	import { EState } from '../../interfaces/enums';
 	import Toggle from '../../annimations/components/Toggle.svelte';
 
-	let animation: IStepAnimation;
 	let leds: ILed[] = [];
 	let devices: IDevice[] = deviceslol;
 	let triangles: Triangle[] = [];
 	let animations = ANIMATIONS;
 	let moreTriangles: Triangle[] = [];
 
+	let animation: IStepAnimation;
 	let state: EState = EState.EDITING;
 	let animationSelected: IAnimation | undefined = animations[0];
 
@@ -111,33 +110,17 @@
 						bind:state
 					/>
 				</div>
-
-				<div class="buttons">
-					<ButtonGroup class="py-4 button-group">
-						<div class:active={true}>
-							<Button outline color={'green'}>On</Button>
-						</div>
-					</ButtonGroup>
-					<ButtonGroup class="py-4 button-group">
-						<Button outline color="yellow">Load</Button>
-						<Button outline color="blue">Save</Button>
-					</ButtonGroup>
-					<ButtonGroup class="py-4 button-group">
-						<Button outline color="purple">Delete</Button>
-					</ButtonGroup>
-				</div>
 			</div>
 
 			<div id="right">
 				<Toggle bind:state />
-				<div class="tabs">
-					<Tabs
-						bind:animations
-						bind:animationSelected
-						on:animationClick={onAnimationClick}
-						on:updateModule={updateModule}
-					/>
-				</div>
+
+				<Tabs
+					bind:animations
+					bind:animationSelected
+					on:animationClick={onAnimationClick}
+					on:updateModule={updateModule}
+				/>
 			</div>
 		</div>
 	</div>
@@ -170,25 +153,12 @@
 	#middle {
 		margin-top: var(--spacing-s);
 		flex-grow: 3;
+		margin-bottom: var(--spacing-s);
 	}
 
 	#right {
 		width: 30%;
 		margin-left: var(--spacing-s);
 		margin-right: var(--spacing-s);
-	}
-	.tabs {
-		margin-top: var(--spacing-s);
-		background-color: var(--light-gray);
-
-		padding: var(--spacing-s);
-
-		border-radius: 20px;
-		height: min-content;
-	}
-
-	.buttons {
-		display: flex;
-		justify-content: space-evenly;
 	}
 </style>
