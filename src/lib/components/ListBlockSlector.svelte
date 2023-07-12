@@ -41,7 +41,7 @@
 	}
 </script>
 
-<div>
+<div class="blocks">
 	{#each blocks as block}
 		<BlockSlector {...block} on:click={() => handleClick(block.id)} />
 	{/each}
@@ -54,17 +54,23 @@
 </div>
 
 <style>
-	.new-device{
+	.blocks {
+		background-color: var(--light-gray);
+		margin-right: var(--spacing-s);
+		border-radius: 20px;
+		padding: var(--spacing-s);
+	}
+
+	.new-device {
 		cursor: default;
-		border-right: solid black 1px;
-		border-bottom: black 1px solid;
 	}
 
-	.new-device:hover{
-		opacity: 0.7;
+	.new-device:hover {
+		transform: scale(1.04);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 
-	.plus{
+	.plus {
 		font-size: var(--header-font-size);
 		font-weight: bold;
 	}

@@ -36,7 +36,7 @@ export function findVectorTriangle(vec1: Vector2, vec2: Vector2, vecOpose: Vecto
 
 export function _createTriangles(devices: IDevice[], triangles: Triangle[], device: IDevice) {
 	for (const dev of device.connected) {
-		const hasTriangle= triangles.filter((x) => x.triId === dev.id).length === 0;
+		const hasTriangle = triangles.filter((x) => x.triId === dev.id).length === 0;
 
 		if (hasTriangle) {
 			const deviceTriangle = triangles.filter((x) => x.triId === device.id)[0];
@@ -108,4 +108,35 @@ export function createLeds(triangles: Triangle[]) {
 	}
 
 	return leds;
+}
+
+const createAndAddTriangle = (
+	vec1: Vector2,
+	vec2: Vector2,
+	vec3: Vector2,
+	color: string,
+	triangleList: Triangle[],
+	newTriangles: Triangle[]
+): void => {
+	const id: string = Math.random().toString(36).substr(2) + Date.now().toString(36);
+	const newTriangle: Triangle = new Triangle(id, vec1, vec2, vec3, color);
+	if (!newTriangle.exists(triangleList) && !newTriangle.exists(newTriangles)) {
+		newTriangles.push(newTriangle);
+	}
+};
+
+export function generateTriangles(triangleList: Triangle[]): Triangle[] {
+	const newTriangles: Triangle[] = [];
+
+	for (const triangle of triangleList) {
+		const vec1: Vector2 = findVectorTriangle(triangle.vec2, triangle.vec3, triangle.vec1);
+		const vec2: Vector2 = findVectorTriangle(triangle.vec3, triangle.vec1, triangle.vec2);
+		const vec3: Vector2 = findVectorTriangle(triangle.vec1, triangle.vec2, triangle.vec3);
+
+		createAndAddTriangle(triangle.vec2, triangle.vec3, vec1, 'gray', triangleList, newTriangles);
+		createAndAddTriangle(triangle.vec3, triangle.vec1, vec2, 'gray', triangleList, newTriangles);
+		createAndAddTriangle(triangle.vec1, triangle.vec2, vec3, 'gray', triangleList, newTriangles);
+	}
+
+	return newTriangles;
 }

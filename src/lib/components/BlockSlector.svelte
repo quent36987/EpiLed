@@ -18,16 +18,16 @@
 <style>
 	.block {
 		padding: var(--spacing-s);
-		border-right: solid black 1px;
-		border-bottom: black 1px solid;
+		border-radius: var(--spacing-s);
+		cursor: default;
 	}
 
 	.block:hover {
-		opacity: 0.7;
+		transform: scale(1.04);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 
 	.block.isSelected {
-		border-right: solid white 1px;
 		background-color: white;
 	}
 

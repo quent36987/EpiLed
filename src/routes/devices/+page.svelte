@@ -1,19 +1,16 @@
 <script lang="ts">
 	import ListBlockSlector from '$lib/components/ListBlockSlector.svelte';
-	import { WAVE_MODULES } from '../../annimations';
 	import Tabs from './Tabs.svelte';
-	import { Button, ButtonGroup } from 'flowbite-svelte';
-	import { onMount } from 'svelte';
-	import { Triangle } from '$lib/mesh/triangle';
-	import { ANIMATIONS, deviceslol } from '../../data/mockdata';
 	import type { IAnimation, IDevice, ILed, IStepAnimation } from '../../interfaces/interfaces';
-	import { createLeds, createTriangles, findVectorTriangle } from './utils';
-	import CanvasEdit from './CanvasEdit.svelte';
-
+	import { ANIMATIONS, deviceslol } from '../../data/mockdata';
+	import { Button, ButtonGroup } from 'flowbite-svelte';
+	import { Triangle } from '$lib/mesh/triangle';
+	import { createLeds, createTriangles, generateTriangles } from './utils';
+	import { onMount } from 'svelte';
 	import Canvas from './Canvas.svelte';
 	import { EState } from '../../interfaces/enums';
+	import Toggle from '../../annimations/components/Toggle.svelte';
 
-	let modules = WAVE_MODULES;
 	let animation: IStepAnimation;
 	let leds: ILed[] = [];
 	let devices: IDevice[] = deviceslol;
@@ -21,7 +18,7 @@
 	let animations = ANIMATIONS;
 	let moreTriangles: Triangle[] = [];
 
-	let status: EState = EState.EDITING;
+	let state: EState = EState.EDITING;
 	let animationSelected: IAnimation | undefined = animations[0];
 
 	let createConfig = (modules) => {
@@ -43,6 +40,7 @@
 	onMount(() => {
 		init();
 		update();
+		play();
 	});
 
 	const update = () => {
@@ -51,53 +49,22 @@
 		}
 	};
 
-	$: {
-		modules;
-		if (status === EState.PLAYING) update();
-	}
+	const updateModule = () => {
+		if (state === EState.PLAYING) {
+			update();
+		}
+	};
 
 	const play = () => {
-		status = EState.PLAYING;
+		state = EState.PLAYING;
+		leds = createLeds(triangles);
 		update();
 	};
 
-	function getNewTriangles(triangleList) {
-		let newTriangles = [];
-		let id = 5000;
-
-		for (let triangle of triangleList) {
-			// Récupérer les trois triangles potentiels connectés
-			let vec1 = findVectorTriangle(triangle.vec2, triangle.vec3, triangle.vec1);
-			let vec2 = findVectorTriangle(triangle.vec3, triangle.vec1, triangle.vec2);
-			let vec3 = findVectorTriangle(triangle.vec1, triangle.vec2, triangle.vec3);
-
-			// Pour chaque triangle potentiel, vérifiez s'il existe déjà dans la liste de triangles existants ou dans la nouvelle liste
-			let newTriangle1 = new Triangle(id.toString(), triangle.vec2, triangle.vec3, vec1, 'gray');
-			if (!newTriangle1.exists(triangleList) && !newTriangle1.exists(newTriangles)) {
-				newTriangles.push(newTriangle1);
-			}
-			id++;
-
-			let newTriangle2 = new Triangle(id.toString(), triangle.vec3, triangle.vec1, vec2, 'gray');
-			if (!newTriangle2.exists(triangleList) && !newTriangle2.exists(newTriangles)) {
-				newTriangles.push(newTriangle2);
-			}
-			id++;
-			let newTriangle3 = new Triangle(id.toString(), triangle.vec1, triangle.vec2, vec3, 'gray');
-			if (!newTriangle3.exists(triangleList) && !newTriangle3.exists(newTriangles)) {
-				newTriangles.push(newTriangle3);
-			}
-			id++;
-		}
-
-		return newTriangles;
-	}
-
 	const edit = () => {
-		status = EState.EDITING;
+		state = EState.EDITING;
 
-		moreTriangles = getNewTriangles(triangles);
-		console.log(moreTriangles);
+		moreTriangles = generateTriangles(triangles);
 	};
 
 	const onAnimationClick = (events) => {
@@ -106,32 +73,43 @@
 	};
 
 	const onTriangleClick = (events) => {
-		console.log('click', events.detail);
-
 		const triangle = moreTriangles.find((triangle) => triangle.triId === events.detail);
 
 		if (triangle) {
-			console.log('push');
 			triangle.color = 'red';
 			triangles.push(triangle);
-			moreTriangles = getNewTriangles(triangles);
+			moreTriangles = generateTriangles(triangles);
 		}
 	};
+
+	$: {
+		state;
+		switch (state) {
+			case EState.PLAYING:
+				play();
+				break;
+			case EState.EDITING:
+				edit();
+				break;
+		}
+	}
 </script>
 
 <div id="app">
-	<div id="left" class="height-100">
+	<div id="left">
 		<ListBlockSlector />
 	</div>
 	<div class="content">
 		<div class="flex-row">
 			<div id="middle" class="flex-col">
 				<div class="flex-1">
-					{#if status === EState.PLAYING}
-						<Canvas bind:triangles bind:animation />
-					{:else if status === EState.EDITING}
-						<CanvasEdit bind:triangles bind:moreTriangles on:triangleClick={onTriangleClick} />
-					{/if}
+					<Canvas
+						bind:triangles
+						bind:animation
+						bind:moreTriangles
+						on:triangleClick={onTriangleClick}
+						bind:state
+					/>
 				</div>
 
 				<div class="buttons">
@@ -151,14 +129,15 @@
 			</div>
 
 			<div id="right">
-				<div>
-					<ButtonGroup class="py-4 button-group">
-						<Button outline color="green" on:click={play}>Play</Button>
-						<Button outline color="blue" on:click={edit}>Edit Animation</Button>
-						<Button outline color="blue">Edit shape</Button>
-					</ButtonGroup>
+				<Toggle bind:state />
+				<div class="tabs">
+					<Tabs
+						bind:animations
+						bind:animationSelected
+						on:animationClick={onAnimationClick}
+						on:updateModule={updateModule}
+					/>
 				</div>
-				<Tabs bind:animations bind:animationSelected on:animationClick={onAnimationClick} />
 			</div>
 		</div>
 	</div>
@@ -171,9 +150,10 @@
 	}
 
 	#left {
+		margin-top: var(--spacing-s);
 		width: min-content;
-		height: 100%;
-		background-color: white;
+		margin-bottom: var(--spacing-s);
+		margin-left: var(--spacing-s);
 	}
 
 	.content {
@@ -188,24 +168,27 @@
 	}
 
 	#middle {
-		background-color: #f8f8f8;
+		margin-top: var(--spacing-s);
 		flex-grow: 3;
 	}
 
 	#right {
-		background-color: #ddd;
-		flex-grow: 1;
+		width: 30%;
+		margin-left: var(--spacing-s);
+		margin-right: var(--spacing-s);
+	}
+	.tabs {
+		margin-top: var(--spacing-s);
+		background-color: var(--light-gray);
+
 		padding: var(--spacing-s);
-		max-width: 40vw;
+
+		border-radius: 20px;
+		height: min-content;
 	}
 
 	.buttons {
 		display: flex;
 		justify-content: space-evenly;
-	}
-
-	.active > button {
-		background-color: #007bff !important;
-		color: white !important;
 	}
 </style>

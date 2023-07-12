@@ -33,6 +33,9 @@
 	--font-size-s: 0.8em;
 
 	--layer-popup-z-index: 20000;
+
+	--light-gray: #ddd;
+	--bg-color: #ffffff;
 }
 
 body {

@@ -4,7 +4,7 @@
 	import type { IAnimation } from '../../interfaces/interfaces';
 	import AnimationList from '../../annimations/components/AnimationList.svelte';
 	import PropertiesBar from '../../annimations/components/PropertiesBar.svelte';
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
 
 	export let animations: IAnimation[];
 	export let animationSelected: IAnimation | undefined;
@@ -15,9 +15,10 @@
 		dispatch('animationClick', event.detail);
 	};
 
-	onMount(() => {
-		console.log('anim1', animationSelected);
-	});
+	$: {
+		animationSelected;
+		dispatch('updateModule');
+	}
 </script>
 
 <Tabs contentClass>
@@ -27,7 +28,7 @@
 			Animation
 		</div>
 
-		<AnimationList bind:animations on:animationClick={onAnimationClick} />
+		<AnimationList bind:animations bind:animationSelected on:animationClick={onAnimationClick} />
 	</TabItem>
 	<TabItem>
 		<div slot="title" class="flex items-center gap-2">
