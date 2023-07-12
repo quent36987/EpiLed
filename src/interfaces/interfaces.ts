@@ -9,7 +9,7 @@ export interface IDevice {
 export interface IAnimation {
 	id: number;
 	modules: IModule[];
-	function: (leds: ILed[], props: any) => IStepAnimation;
+	function: (leds: ILed[], props: any, devices?: IDevice[]) => IStepAnimation;
 	title: string;
 	description?: string;
 }

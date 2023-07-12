@@ -35,7 +35,7 @@
 		background-color: #f2f2f2;
 		padding: 1rem;
 		border-radius: 0.5rem;
-		margin: var(--spacing-s);
+		margin-top: var(--spacing-s);
 		width: 100%;
 		transition: all 0.3s;
 		cursor: pointer;

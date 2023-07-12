@@ -44,7 +44,11 @@
 
 	const update = () => {
 		if (animationSelected) {
-			animation = animationSelected.function(leds, createConfig(animationSelected.modules));
+			animation = animationSelected.function(
+				leds,
+				createConfig(animationSelected.modules),
+				devices
+			);
 		}
 	};
 
@@ -75,9 +79,33 @@
 		const triangle = moreTriangles.find((triangle) => triangle.triId === events.detail);
 
 		if (triangle) {
+			for (let tri of triangles) {
+				const pin = tri.isConnected(triangle);
+
+				if (pin !== -1) {
+					devices.push({
+						id: triangle.triId,
+						connected: [
+							{
+								id: tri.triId,
+								pin: 1
+							}
+						]
+					});
+
+					devices
+						.find((device) => device.id === tri.triId)
+						?.connected.push({
+							id: triangle.triId,
+							pin: pin
+						});
+				}
+			}
+
 			triangle.color = 'red';
 			triangles.push(triangle);
 			moreTriangles = generateTriangles(triangles);
+			triangles = createTriangles(devices);
 		}
 	};
 

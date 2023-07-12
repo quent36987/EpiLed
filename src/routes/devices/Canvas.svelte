@@ -5,6 +5,8 @@
 	import { InteractionManager } from 'three.interactive';
 	import type { IStepAnimation } from '../../interfaces/interfaces';
 	import { EState } from '../../interfaces/enums';
+	import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper';
+	import { ArcballControls } from 'three-stdlib';
 
 	export let animation: IStepAnimation;
 	export let triangles: Triangle[];
@@ -32,6 +34,13 @@
 
 		renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
 
+		const controls = new ArcballControls(camera, renderer.domElement, scene);
+
+		controls.addEventListener('change', function () {
+			renderer.render(scene, camera);
+		});
+
+		controls.update();
 		update();
 		animate();
 		resize();
@@ -104,6 +113,7 @@
 	const animate = () => {
 		if (state == EState.PAUSED) {
 			requestAnimationFrame(animate);
+
 			renderer.render(scene, camera);
 			return;
 		}

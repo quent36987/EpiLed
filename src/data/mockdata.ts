@@ -1,7 +1,9 @@
 import type { IAnimation, IDevice } from '../interfaces/interfaces';
 import {
+	createSnakeAnimation,
 	createUniformAnimation,
 	createWaveAnimation,
+	SNAKE_MODULES,
 	UNIFORM_MODULES,
 	WAVE_MODULES
 } from '../annimations';
@@ -12,14 +14,21 @@ export const ANIMATIONS: IAnimation[] = [
 		modules: WAVE_MODULES,
 		function: createWaveAnimation,
 		title: 'Wave',
-		description: 'make a wave of color',
+		description: 'make a wave of color'
 	},
 	{
 		id: 1,
 		modules: UNIFORM_MODULES,
 		function: createUniformAnimation,
 		title: 'Uniforme',
-		description: 'same color for all leds',
+		description: 'same color for all leds'
+	},
+	{
+		id: 2,
+		modules: SNAKE_MODULES,
+		function: createSnakeAnimation,
+		title: 'Snake',
+		description: 'wave of color that goes from one led to another'
 	}
 ];
 
