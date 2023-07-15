@@ -2,6 +2,7 @@ export interface IShape {
 	title: string;
 	id: number;
 	devices: IDevice[];
+	owner_id: number;
 }
 
 export interface IDevice {

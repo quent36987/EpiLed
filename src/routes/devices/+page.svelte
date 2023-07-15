@@ -18,7 +18,7 @@
 	import ToggleSize from '../../annimations/components/ToggleSize.svelte';
 	import { supabase } from '../../supabaseClient';
 	import SettingButtons from '../../annimations/components/SettingButtons.svelte';
-	import {session} from "../../store/store";
+	import { session } from '../../store/store';
 
 	let shapes: IShape[] = [];
 	let leds: ILed[] = [];
@@ -36,18 +36,15 @@
 	let my_session;
 	let refresh = true;
 
-	session.subscribe(value => {
+	session.subscribe((value) => {
 		my_session = value;
-		if(!refresh){
+		if (!refresh) {
 			refresh = true;
 		}
 	});
 
 	// $: devices = shapeSelected?.devices ?? deviceslol;
-	// $: triangles = createTriangles(devices);
 	// $: moreTriangles = generateTriangles(triangles, editSize);
-
-
 
 	let createConfig = (modules) => {
 		let config = {};
@@ -74,7 +71,7 @@
 	}
 
 	onMount(() => {
-		console.log('on mount')
+		console.log('on mount');
 		leds = createLeds(triangles);
 
 		update();
@@ -123,6 +120,10 @@
 
 		if (triangle) {
 			// delete triangle
+			if (devices.length === 1) {
+				return;
+			}
+
 			devices = devices.filter((device) => device.id !== events.detail);
 			devices.forEach((device) => {
 				device.connected = device.connected.filter((connected) => connected.id !== events.detail);
@@ -219,9 +220,10 @@
 			devices = shapeSelected.devices;
 			triangles = createTriangles(devices);
 			moreTriangles = generateTriangles(triangles, editSize);
+			leds = createLeds(triangles);
+			update();
 		}
 	}
-
 </script>
 
 <div id="app">

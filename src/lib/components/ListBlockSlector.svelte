@@ -2,23 +2,64 @@
 	import { createEventDispatcher } from 'svelte';
 	import BlockSlector from '$lib/components/BlockSlector.svelte';
 	import type { IShape } from '../../interfaces/interfaces';
+	import { supabase } from '../../supabaseClient';
+	import { session } from '../../store/store';
 
-	const dispatch = createEventDispatcher();
 	export let shapes: IShape[];
 	export let shapeSelected: IShape;
 
 	function handleClick(shape: IShape) {
-		shapeSelected = shape
+		shapeSelected = shape;
 	}
 
-	function onNewDeviceClick() {
-		dispatch('newDevice');
-	}
+	let my_session;
+
+	session.subscribe((value) => {
+		my_session = value;
+	});
+
+	const onNewDeviceClick = async () => {
+		const title = prompt('Enter device name', 'New device');
+		try {
+			console.log('user', my_session.user);
+
+			const { data, error, status } = await supabase
+				.from('shapes')
+				.insert([
+					{
+						owner_id: my_session.user.id,
+						title: title,
+						devices: [
+							{
+								id: '0',
+								size: 1,
+								connected: []
+							}
+						]
+					}
+				])
+				.select();
+
+			console.log('data', data, 'error', error, 'status', status);
+
+			if (data) {
+				shapes.push(data[0]);
+				shapeSelected = data[0];
+			}
+			if (error && status !== 406) throw error;
+		} catch (error) {
+			if (error instanceof Error) {
+				console.log(error.message);
+			}
+		}
+
+
+	};
 </script>
 
 <div class="blocks">
 	{#each shapes as shape}
-		<BlockSlector on:click={() => handleClick(shape)} bind:shape={shape}  bind:shapeSelected={shapeSelected} />
+		<BlockSlector on:click={() => handleClick(shape)} bind:shape bind:shapeSelected />
 	{/each}
 	<div class="new-device" on:click={onNewDeviceClick}>
 		<div class="title">
