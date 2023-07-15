@@ -1,6 +1,12 @@
 import * as THREE from 'three';
 import type { Vector2 } from 'three';
 
+export interface ITriangleCreationInfo {
+	pinConnected: number;
+	withTriangleId: string;
+	inTrianglePin: number;
+}
+
 export class Triangle extends THREE.Mesh {
 	triId: string;
 	shape: THREE.Shape;
@@ -10,6 +16,12 @@ export class Triangle extends THREE.Mesh {
 	border: THREE.LineLoop | null = null;
 	color: string;
 	size: number;
+
+	triangleCreationInfo: ITriangleCreationInfo = {
+		pinConnected: 0,
+		withTriangleId: '',
+		inTrianglePin: 0
+	};
 
 	constructor(
 		triID: string,
@@ -59,18 +71,18 @@ export class Triangle extends THREE.Mesh {
 			side: THREE.DoubleSide
 		});
 
-		const cc = this.triId === '1' ? 'red' : 'green';
-		//add a circle on vec1
-		const circle = new THREE.CircleGeometry(0.05);
-		const circleMesh = new THREE.Mesh(circle, new THREE.MeshBasicMaterial({ color: cc }));
-		circleMesh.position.set(p1.x, p1.y, 0.1);
-		this.add(circleMesh);
-
-		//add square on vec2
-		const square = new THREE.BoxGeometry(0.1, 0.1, 0.1);
-		const squareMesh = new THREE.Mesh(square, new THREE.MeshBasicMaterial({ color: cc }));
-		squareMesh.position.set(p2.x, p2.y, 0.1);
-		this.add(squareMesh);
+		// const cc = this.triId === '1' ? 'red' : 'green';
+		// //add a circle on vec1
+		// const circle = new THREE.CircleGeometry(0.05);
+		// const circleMesh = new THREE.Mesh(circle, new THREE.MeshBasicMaterial({ color: cc }));
+		// circleMesh.position.set(p1.x, p1.y, 0.1);
+		// this.add(circleMesh);
+		//
+		// //add square on vec2
+		// const square = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+		// const squareMesh = new THREE.Mesh(square, new THREE.MeshBasicMaterial({ color: cc }));
+		// squareMesh.position.set(p2.x, p2.y, 0.1);
+		// this.add(squareMesh);
 
 		super.updateMorphTargets();
 	}
@@ -178,4 +190,81 @@ export class Triangle extends THREE.Mesh {
 		const pinVec2 = new THREE.Vector2().lerpVectors(vecA, vecB, (segment + 1) / this.size);
 		return [pinVec1, pinVec2, vecC];
 	}
+
+	public containsPoint(point: THREE.Vector2): boolean {
+		const v0 = new THREE.Vector2().subVectors(this.vec3, this.vec1);
+		const v1 = new THREE.Vector2().subVectors(this.vec2, this.vec1);
+		const v2 = new THREE.Vector2().subVectors(point, this.vec1);
+
+		const dot00 = v0.dot(v0);
+		const dot01 = v0.dot(v1);
+		const dot02 = v0.dot(v2);
+		const dot11 = v1.dot(v1);
+		const dot12 = v1.dot(v2);
+
+		const invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+		const u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+		const v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+		// Vérifiez si le point est dans le triangle
+		return u >= 0 && v >= 0 && u + v < 1;
+	}
+
+	public intersects(other: Triangle): boolean {
+		const p1 = other.vec1;
+		const p2 = other.vec2;
+		const p3 = other.vec3;
+
+		const center = new THREE.Vector2((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3);
+
+		const newP1 = new THREE.Vector2(p1.x, p1.y).lerp(center, 1 - 0.95);
+		const newP2 = new THREE.Vector2(p2.x, p2.y).lerp(center, 1 - 0.95);
+		const newP3 = new THREE.Vector2(p3.x, p3.y).lerp(center, 1 - 0.95);
+
+		if (this.containsPoint(newP1) || this.containsPoint(newP2) || this.containsPoint(newP3)) {
+			return true;
+		}
+
+		// Vérifiez l'intersection des lignes des triangles
+		const lines1 = [
+			[this.vec1, this.vec2],
+			[this.vec2, this.vec3],
+			[this.vec3, this.vec1]
+		];
+		const lines2 = [
+			[newP1, newP2],
+			[newP2, newP3],
+			[newP3, newP1]
+		];
+
+		for (const line1 of lines1) {
+			for (const line2 of lines2) {
+				if (linesIntersect(line1[0], line1[1], line2[0], line2[1])) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+}
+
+function linesIntersect(
+	a1: THREE.Vector2,
+	a2: THREE.Vector2,
+	b1: THREE.Vector2,
+	b2: THREE.Vector2
+): boolean {
+	const denominator = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
+
+	// Les lignes sont parallèles
+	if (denominator === 0) return false;
+
+	const numerator1 = (b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x);
+	const numerator2 = (a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x);
+	const r = numerator1 / denominator;
+	const s = numerator2 / denominator;
+
+	// Les lignes se croisent
+	return r >= 0 && r <= 1 && s >= 0 && s <= 1;
 }

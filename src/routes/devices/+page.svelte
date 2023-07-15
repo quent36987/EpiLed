@@ -9,6 +9,7 @@
 	import Canvas from './Canvas.svelte';
 	import { EState } from '../../interfaces/enums';
 	import Toggle from '../../annimations/components/Toggle.svelte';
+	import ToggleSize from '../../annimations/components/ToggleSize.svelte';
 
 	let leds: ILed[] = [];
 	let devices: IDevice[] = deviceslol;
@@ -18,6 +19,7 @@
 
 	let animation: IStepAnimation;
 	let state: EState = EState.EDITING;
+	let editSize = 3;
 	let animationSelected: IAnimation | undefined = animations[0];
 
 	let createConfig = (modules) => {
@@ -64,10 +66,14 @@
 		update();
 	};
 
+	$: {
+		editSize;
+		edit();
+	}
 	const edit = () => {
 		state = EState.EDITING;
 
-		moreTriangles = generateTriangles(triangles);
+		moreTriangles = generateTriangles(triangles, editSize);
 	};
 
 	const onAnimationClick = (events) => {
@@ -79,33 +85,28 @@
 		const triangle = moreTriangles.find((triangle) => triangle.triId === events.detail);
 
 		if (triangle) {
-			for (let tri of triangles) {
-				const pin = tri.isConnected(triangle);
+			devices.push({
+				id: triangle.triId,
+				connected: [
+					{
+						id: triangle.triangleCreationInfo.withTriangleId,
+						pin: triangle.triangleCreationInfo.pinConnected
+					}
+				],
+				size: triangle.size
+			});
 
-				if (pin !== -1) {
-					devices.push({
-						id: triangle.triId,
-						connected: [
-							{
-								id: tri.triId,
-								pin: 1
-							}
-						]
-					});
-
-					devices
-						.find((device) => device.id === tri.triId)
-						?.connected.push({
-							id: triangle.triId,
-							pin: pin
-						});
-				}
-			}
+			devices
+				.find((device) => device.id === triangle.triangleCreationInfo.withTriangleId)
+				?.connected.push({
+					id: triangle.triId,
+					pin: triangle.triangleCreationInfo.inTrianglePin
+				});
 
 			triangle.color = 'red';
-			triangles.push(triangle);
-			moreTriangles = generateTriangles(triangles);
+
 			triangles = createTriangles(devices);
+			moreTriangles = generateTriangles(triangles, editSize);
 		}
 	};
 
@@ -142,7 +143,9 @@
 
 			<div id="right">
 				<Toggle bind:state />
-
+				{#if state === EState.EDITING}
+					<ToggleSize bind:size={editSize} />
+				{/if}
 				<Tabs
 					bind:animations
 					bind:animationSelected

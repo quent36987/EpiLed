@@ -23,8 +23,6 @@ export function createSnakeAnimation(
 
 	let firstLed = devices.find((device) => device.connected.length === 1)?.id;
 
-	console.log(firstLed);
-
 	if (!firstLed) {
 		firstLed = devices.find((device) => device.connected.length === 2)?.id;
 	}

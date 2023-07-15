@@ -5,7 +5,6 @@
 	import { InteractionManager } from 'three.interactive';
 	import type { IStepAnimation } from '../../interfaces/interfaces';
 	import { EState } from '../../interfaces/enums';
- 	import { ArcballControls } from 'three-stdlib';
 
 	export let animation: IStepAnimation;
 	export let triangles: Triangle[];
@@ -17,6 +16,7 @@
 
 	let timecode = 0;
 	let maxTimecode = 0;
+	let zoom = 0;
 
 	let scene: THREE.Scene;
 	let camera: THREE.PerspectiveCamera;
@@ -48,8 +48,6 @@
 
 		interactionManager = new InteractionManager(renderer, camera, renderer.domElement);
 
-		console.log('triangles', triangles);
-
 		for (const triangle of triangles) {
 			scene.add(triangle);
 			interactionManager.add(triangle);
@@ -58,6 +56,11 @@
 				dispatch('triangleClick', target.target.triId);
 			}); */
 		}
+
+		let maxX = Math.max(...triangles.map((x) => Math.max(x.vec1.x, x.vec2.x, x.vec3.x)));
+		let minX = Math.min(...triangles.map((x) => Math.min(x.vec1.x, x.vec2.x, x.vec3.x)));
+		let maxY = Math.max(...triangles.map((x) => Math.max(x.vec1.y, x.vec2.y, x.vec3.y)));
+		let minY = Math.min(...triangles.map((x) => Math.min(x.vec1.y, x.vec2.y, x.vec3.y)));
 
 		if (state == EState.EDITING) {
 			for (const triangle of moreTriangles) {
@@ -76,18 +79,23 @@
 					target.target.material.color.set(triangle.color);
 				});
 			}
-		}
 
-		const maxX = Math.max(...triangles.map((x) => Math.max(x.vec1.x, x.vec2.x, x.vec3.x)));
-		const minX = Math.min(...triangles.map((x) => Math.min(x.vec1.x, x.vec2.x, x.vec3.x)));
-		const maxY = Math.max(...triangles.map((x) => Math.max(x.vec1.y, x.vec2.y, x.vec3.y)));
-		const minY = Math.min(...triangles.map((x) => Math.min(x.vec1.y, x.vec2.y, x.vec3.y)));
+			const maxX2 = Math.max(...moreTriangles.map((x) => Math.max(x.vec1.x, x.vec2.x, x.vec3.x)));
+			const minX2 = Math.min(...moreTriangles.map((x) => Math.min(x.vec1.x, x.vec2.x, x.vec3.x)));
+			const maxY2 = Math.max(...moreTriangles.map((x) => Math.max(x.vec1.y, x.vec2.y, x.vec3.y)));
+			const minY2 = Math.min(...moreTriangles.map((x) => Math.min(x.vec1.y, x.vec2.y, x.vec3.y)));
+
+			maxX = Math.max(maxX, maxX2);
+			minX = Math.min(minX, minX2);
+			maxY = Math.max(maxY, maxY2);
+			minY = Math.min(minY, minY2);
+		}
 
 		camera.position.x = (maxX + minX) / 2;
 		camera.position.y = (maxY + minY) / 2;
 
 		let maxDistance = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2));
-		camera.position.z = maxDistance - 1;
+		camera.position.z = Math.max(maxDistance - 1 + zoom, 1);
 	};
 
 	$: {
@@ -103,6 +111,11 @@
 			maxTimecode = animation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b));
 		}
 	}
+
+	const editZoom = (value) => {
+		camera.position.z = camera.position.z + value;
+		zoom += value;
+	};
 
 	const animate = () => {
 		if (state == EState.PAUSED) {
@@ -162,8 +175,8 @@
 	<canvas bind:this={canvas} class="test" />
 
 	<div class="zooms">
-		<div class="zoom" on:click={() => (camera.position.z -= 1)}>+</div>
-		<div class="zoom" on:click={() => (camera.position.z += 1)}>-</div>
+		<div class="zoom" on:click={() => editZoom(-1)}>+</div>
+		<div class="zoom" on:click={() => editZoom(1)}>-</div>
 	</div>
 </div>
 

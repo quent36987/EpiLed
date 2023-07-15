@@ -180,17 +180,47 @@ const createAndAddTriangle = (
 	}
 };
 
-export function generateTriangles(triangleList: Triangle[]): Triangle[] {
+function intersept(triangleList: Triangle[], triangle: Triangle): boolean {
+	for (const tri of triangleList) {
+		if (tri.intersects(triangle)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+export function generateTriangles(triangleList: Triangle[], editSize: number): Triangle[] {
 	const newTriangles: Triangle[] = [];
 
-	for (const triangle of triangleList) {
-		const vec1: Vector2 = findVectorTriangle(triangle.vec2, triangle.vec3, triangle.vec1);
-		const vec2: Vector2 = findVectorTriangle(triangle.vec3, triangle.vec1, triangle.vec2);
-		const vec3: Vector2 = findVectorTriangle(triangle.vec1, triangle.vec2, triangle.vec3);
+	// faut parcourir tt les pin de chaque triangle
+	// for i sur size
+	// créer un tri de size edit size et connecter pin i sur le pin de triangle
+	// si il empiete sur un truc déja codé on le skip
+	// sinon on met de coté
+	// on verifi que ya pas un trinagle avec les meme angle qui existe dans ceux mi de coté
 
-		createAndAddTriangle(triangle.vec2, triangle.vec3, vec1, 'gray', triangleList, newTriangles);
-		createAndAddTriangle(triangle.vec3, triangle.vec1, vec2, 'gray', triangleList, newTriangles);
-		createAndAddTriangle(triangle.vec1, triangle.vec2, vec3, 'gray', triangleList, newTriangles);
+	for (const triangle of triangleList) {
+		for (let pin = 1; pin <= triangle.size * 3; pin++) {
+			const vecPin = triangle.getPin(pin);
+
+			for (let i = 1; i <= editSize; i += 1) {
+				const id: string = Math.random().toString(36).substr(2) + Date.now().toString(36);
+
+				const vecs = test(vecPin[0], vecPin[1], vecPin[2], editSize, i);
+				const newTriangle = new Triangle(id, vecs[0], vecs[1], vecs[2], editSize, 'gray');
+
+				if (!newTriangle.exists(triangleList) && !newTriangle.exists(newTriangles)) {
+					if (!intersept(triangleList, newTriangle)) {
+						newTriangle.triangleCreationInfo = {
+							pinConnected: i,
+							withTriangleId: triangle.triId,
+							inTrianglePin: pin
+						};
+						newTriangles.push(newTriangle);
+					}
+				}
+			}
+		}
 	}
 
 	return newTriangles;
