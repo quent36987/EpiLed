@@ -2,25 +2,32 @@
 	import { DeleteOutlined, EditOutlined, SaveOutlined } from 'svelte-ant-design-icons';
 	import type { IShape } from '../../interfaces/interfaces';
 	import { supabase } from '../../supabaseClient';
+	import { addToast } from '../../store/store';
 
 	export let shape: IShape;
 
 	const onSave = async () => {
 		console.log('save');
 		const { data, error } = await supabase.from('shapes').upsert(shape);
-
+		addToast({ type: 'success', message: 'Shape saved', timeout: 2000, dismissible: true });
 		console.log(data, error);
 	};
 
 	const onEdit = async () => {
 		console.log('edit');
-		shape.title =  prompt('Enter a new name for this shape', shape.title);
+		shape.title = prompt('Enter a new name for this shape', shape.title);
+		addToast({ type: 'success', message: 'Shape name updated', timeout: 2000, dismissible: true });
 	};
 
 	const onDelete = async () => {
 		if (confirm('Are you sure you want to delete this?')) {
 			const error = await supabase.from('shapes').delete().match({ id: shape.id }).single();
-
+			addToast({
+				type: 'success',
+				message: 'Shape deleted',
+				timeout: 2000,
+				dismissible: true
+			});
 			console.log(error);
 		}
 	};
@@ -71,7 +78,7 @@
 	}
 
 	.toggle-button:hover {
-		transform: scale(1.04);
+		transform: scale(1.1);
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 </style>

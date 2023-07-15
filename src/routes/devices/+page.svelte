@@ -22,7 +22,6 @@
 
 	let shapes: IShape[] = [];
 	let leds: ILed[] = [];
-	let devices: IDevice[] = deviceslol;
 	let triangles: Triangle[] = [];
 	let animations = ANIMATIONS;
 	let moreTriangles: Triangle[] = [];
@@ -83,7 +82,7 @@
 			animation = animationSelected.function(
 				leds,
 				createConfig(animationSelected.modules),
-				devices
+				shapeSelected?.devices ?? []
 			);
 		}
 	};
@@ -118,24 +117,28 @@
 
 		const triangle = triangles.find((triangle) => triangle.triId === events.detail);
 
-		if (triangle) {
+		if (triangle && shapeSelected) {
 			// delete triangle
-			if (devices.length === 1) {
+			if (shapeSelected.devices.length === 1) {
 				return;
 			}
 
-			devices = devices.filter((device) => device.id !== events.detail);
-			devices.forEach((device) => {
+			shapeSelected.devices = shapeSelected.devices.filter((device) => device.id !== events.detail);
+			shapeSelected.devices.forEach((device) => {
 				device.connected = device.connected.filter((connected) => connected.id !== events.detail);
 			});
 
-			triangles = createTriangles(devices);
+			triangles = createTriangles(shapeSelected.devices);
 			moreTriangles = generateTriangles(triangles, editSize);
 		} else {
 			const newTriangle = moreTriangles.find((tri) => tri.triId === events.detail);
 
-			if (newTriangle && !devices.some((device) => device.id === events.detail)) {
-				devices.push({
+			if (
+				newTriangle &&
+				shapeSelected &&
+				!shapeSelected.devices.some((device) => device.id === events.detail)
+			) {
+				shapeSelected.devices.push({
 					id: newTriangle.triId,
 					connected: [
 						{
@@ -146,7 +149,7 @@
 					size: newTriangle.size
 				});
 
-				devices
+				shapeSelected.devices
 					.find((device) => device.id === newTriangle.triangleCreationInfo.withTriangleId)
 					?.connected.push({
 						id: newTriangle.triId,
@@ -155,7 +158,7 @@
 
 				newTriangle.color = 'green';
 
-				triangles = createTriangles(devices);
+				triangles = createTriangles(shapeSelected.devices);
 				moreTriangles = generateTriangles(triangles, editSize);
 			}
 		}
@@ -172,26 +175,6 @@
 				break;
 		}
 	}
-
-	const newDevice = async () => {
-		console.log('new device', my_session);
-
-		try {
-			console.log('user', my_session.user);
-
-			const { data, error, status } = await supabase
-				.from('shapes')
-				.insert([{ owner_id: my_session.user.id, title: 'New Device', devices: devices }])
-				.select();
-
-			console.log('data', data, 'error', error, 'status', status);
-			if (error && status !== 406) throw error;
-		} catch (error) {
-			if (error instanceof Error) {
-				console.log(error.message);
-			}
-		}
-	};
 
 	const getShapes = async () => {
 		try {
@@ -217,8 +200,7 @@
 		shapeSelected;
 		console.log('shapeSelected', shapeSelected);
 		if (shapeSelected) {
-			devices = shapeSelected.devices;
-			triangles = createTriangles(devices);
+			triangles = createTriangles(shapeSelected.devices);
 			moreTriangles = generateTriangles(triangles, editSize);
 			leds = createLeds(triangles);
 			update();
@@ -228,7 +210,11 @@
 
 <div id="app">
 	<div id="left">
-		<ListBlockSlector on:newDevice={newDevice} bind:shapes bind:shapeSelected />
+		<ListBlockSlector
+			on:newDevice={shapeSelected?.newDevice ?? []}
+			bind:shapes
+			bind:shapeSelected
+		/>
 	</div>
 	<div class="content">
 		<div class="flex-row">
