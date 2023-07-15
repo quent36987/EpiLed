@@ -3,42 +3,26 @@
 	import image2 from './proto_2.png';
 	import image3 from './proto_3.png';
 	import image4 from './proto_4.png';
-	import image5 from './proto_5.png';
 
 	import circuit1 from './circuits_1.png';
 	import circuit2 from './circuits_2.png';
 	import circuit3 from './circuits_3.png';
 	import circuit4 from './circuits_4.png';
+	import circuit5 from './circuits_5.png';
+	import circuit6 from './circuits_6.png';
 
-	let index = 0;
-	const images = [image1, image2, image3, image4, image5];
-	const images2 = [circuit1, circuit2, circuit3, circuit4];
-	const captions = [
-		"Final version of Epileaf",
-		"Final version of Epileaf",
-		"3D View : 1",
-		"3D View : 2",
-		"3D View : 3",
-	];
+	const images = [image1, image2, image3, image4];
+	const images2 = [circuit1, circuit2, circuit3, circuit4, circuit5, circuit6];
 
-	function previous() {
-		if (index > 0) {
-			index--;
-		} else {
-			index = images.length - 1;
-		}
-	}
-
-	function next() {
-		if (index < images.length - 1) {
-			index++;
-		} else {
-			index = 0;
-		}
+	let hoveredIndex = null;
+	function setHoveredIndex(i) {
+		hoveredIndex = i;
 	}
 </script>
 
 <style>
+    @import url('https://fonts.googleapis.com/css?family=Work+Sans:300,400&display=swap');
+
 	.header {
 		background-image: url('./web-Header-Background.jpg');
 		background-position: center;
@@ -46,19 +30,24 @@
 		color: #fff;
 		text-align: center;
 		padding: 2em 0;
+		font-family: 'Work Sans', sans-serif;
+		font-size: 36px;
+		font-weight: 700;
 	}
 
 	.container {
-		display: flex;
-		justify-content: space-between;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1em;
 		padding: 1em;
+		font-family: 'Work Sans', sans-serif;
 	}
 
 	.text-column {
 		flex: 1;
 		margin-right: 1em;
 		color: #363537;
-		font-family: Arial, sans-serif;
+		font-family: 'Work Sans', sans-serif;
 		padding: 1em;
 		background-color: #f9f9f9;
 	}
@@ -84,6 +73,7 @@
 	.github-container {
 		display: flex;
 		justify-content: center;
+		font-family: 'Work Sans', sans-serif;
 	}
 
 	.github-img {
@@ -91,49 +81,86 @@
 		height: 50px;
 	}
 
-	.slider {
-		flex: 1;
-		max-width: 600px;
+	.square {
 		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		margin-top: 2em;
-	}
-
-	.slider img {
-		max-width: 70%;
-		height: auto;
-	}
-
-	.image-container {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.image-container button {
-		margin: 0 1em;
-	}
-
-	.caption {
-		text-align: center;
-		margin-bottom: 1em;
-		color: #9467bd;
-	}
-
-	.mosaic {
-		display: flex;
+		flex-wrap: wrap;
 		justify-content: space-around;
-		flex-wrap: nowrap;
-		overflow: auto;
-		padding: 1em 0;
+		width: 90%;
+		margin: auto;
 	}
 
-	.mosaic img {
-		width: 23%; /* Adjust this value to control the size of the images */
+	.square img {
+		width: 48%;
 		height: auto;
-		margin: 0.5em;
+		margin: 1%;
+		border-radius: 15px;
+		transform: rotate(-10deg);
+		transition: transform 0.5s;
+	}
+
+	.square img:nth-child(2) {
+		transform: rotate(10deg);
+	}
+
+	.square img:nth-child(3) {
+		transform: rotate(-20deg);
+	}
+
+	.square img:nth-child(4) {
+		transform: rotate(20deg);
+	}
+
+	.square img:hover {
+		transform: rotate(0deg) scale(1.2);
+		z-index: 1;
+	}
+
+	.rectangle {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		grid-template-rows: repeat(3, 1fr);
+		gap: 0.5em;
+		width: 100%;
+		margin: auto;
+		position: relative;
+	}
+
+	.rectangle div {
+		width: 100%;
+		height: 0;
+		padding-bottom: 50%;
+		position: relative;
+	}
+
+	.rectangle img {
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		border-radius: 15px;
+		transform: rotate(-10deg);
+		transition: transform 0.5s;
+	}
+
+	.rectangle div:nth-child(2n) img {
+		transform: rotate(10deg);
+	}
+
+	.rectangle div:nth-child(2n+1) img {
+		transform: rotate(-10deg);
+	}
+
+
+.rectangle div:nth-child(2n) img:hover,
+.rectangle div:nth-child(2n+1) img:hover {
+	transform: rotate(0deg) scale(1.2);
+	z-index: 1;
+}
+
+
+	.image-description {
+		font-family: 'Work Sans', sans-serif;
+		padding: 1em;
+		background-color: #f9f9f9;
 	}
 </style>
 
@@ -148,8 +175,9 @@
 
 <div class="container">
 	<div class="text-column">
-		<p>
+		<p><strong>
 			This is Epileaf's SvelteKit app.
+			</strong>
 		</p>
 
 		<p>
@@ -158,11 +186,11 @@
 		</p>
 
 		<p>
-			Beside basic informations regarding Epileaf, on this page you'll be able to find some pictures of the processes behind this project's developpement.
+			Beside basic informations regarding Epileaf, on this page you'll be able to find some pictures of the processes behind this project's development.
 		</p>
 
 		<p>
-			Do not hesitate to check out the code on GitHub:
+			Do not hesitate to check out the code on <code>Github</code>:
 		</p>
 		<div class="github-container">
 			<a href="https://github.com/quent36987/svelte-test">
@@ -171,18 +199,31 @@
 		</div>
 	</div>
 
-	<div class="slider">
-		<p class="caption">{captions[index]}</p>
-		<div class="image-container">
-			<button on:click={previous}>←</button>
-			<img src={images[index]} alt="Prototype image" />
-			<button on:click={next}>→</button>
-		</div>
+	<div class="square">
+		{#each images as image, i (i)}
+			<img src={image} alt={`Prototype image ${i + 1}`} on:mouseover={() => setHoveredIndex(i)} on:mouseout={() => setHoveredIndex(null)} />
+		{/each}
 	</div>
-</div>
 
-<div class="mosaic">
-	{#each images2 as image2 (index)}
-		<img src={image2} alt={`Circuit design ${index + 1}`} />
-	{/each}
+	<div class="rectangle">
+		{#each images2 as image2, i (i)}
+			<div>
+				<img src={image2} alt={`Circuit design ${i + 1}`} on:mouseover={() => setHoveredIndex(i)} on:mouseout={() => setHoveredIndex(null)} />
+			</div>
+		{/each}
+	</div>
+
+	<div class="image-description">
+		<p>
+			<br/>
+			<strong>Who are we ?</strong>. <br/>
+		</p>
+
+		<p>
+			<br/>
+			We are a team made from Epita's 2024 IF promotion. Currently in ING2 (almost in ING3!), we work on this project as a team under the supervision of <code>Christian Diaconu</code>. 
+		</p>
+		<p>
+			<br/>		</p>
+	</div>
 </div>
