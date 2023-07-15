@@ -1,5 +1,6 @@
 export interface IDevice {
 	id: string;
+	size: number;
 	connected: {
 		id: string;
 		pin: number;
