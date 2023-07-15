@@ -66,79 +66,34 @@ export function getPin(vec1: Vector2, vec2: Vector2, vec3: Vector2, size: number
 
 export function isTriangleClockwise(p1: Vector2, p2: Vector2, p3: Vector2) {
 	const area = 0.5 * (p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y));
-	console.log('area', area);
 	return area < 0;
 }
 
 export function test(A: Vector2, B: Vector2, C: Vector2, size: number, pin: number) {
-	const bothDirections = [
-		new THREE.Vector2().lerpVectors(A, B, size),
-		new THREE.Vector2().lerpVectors(B, A, size)
-	];
+	for (let i = 1; i <= size; i++) {
+		const p1 = new THREE.Vector2().lerpVectors(A, B, i);
+		const p2 = new THREE.Vector2().lerpVectors(A, B, i - size);
 
-	let firstTriangle = [B, bothDirections[1], findVectorTriangle(B, bothDirections[1], C)];
-	if (!isTriangleClockwise(firstTriangle[0], firstTriangle[1], firstTriangle[2])) {
-		firstTriangle = [bothDirections[1], B, findVectorTriangle(bothDirections[1], B, C)];
-	}
-
-	for (let j = 0; j < 3; j++) {
-		const vecs = getPin(
-			firstTriangle[j % 3],
-			firstTriangle[(j + 1) % 3],
-			firstTriangle[(j + 2) % 3],
-			size,
-			pin
-		);
-		console.log('pin', pin);
-
-		if (
-			(vecs[0].distanceTo(A) < 0.01 && vecs[1].distanceTo(B) < 0.01) ||
-			(vecs[0].distanceTo(B) < 0.01 && vecs[1].distanceTo(A) < 0.01)
-		) {
-			console.log(
-				'j',
-				j,
-				'good ?',
-				isTriangleClockwise(
-					firstTriangle[j % 3],
-					firstTriangle[(j + 1) % 3],
-					firstTriangle[(j + 2) % 3]
-				)
-			);
-			return [firstTriangle[j % 3], firstTriangle[(j + 1) % 3], firstTriangle[(j + 2) % 3]];
+		const firstTriangle = [p1, p2, findVectorTriangle(p1, p2, C)];
+		if (!isTriangleClockwise(firstTriangle[0], firstTriangle[1], firstTriangle[2])) {
+			firstTriangle.reverse();
 		}
-	}
 
-	let secondTriangle = [bothDirections[0], A, findVectorTriangle(bothDirections[0], A, C)];
-
-	if (!isTriangleClockwise(secondTriangle[0], secondTriangle[1], secondTriangle[2])) {
-		secondTriangle = [A, bothDirections[0], findVectorTriangle(A, bothDirections[0], C)];
-	}
-
-	for (let j = 0; j < 3; j++) {
-		const vecs = getPin(
-			secondTriangle[j % 3],
-			secondTriangle[(j + 1) % 3],
-			secondTriangle[(j + 2) % 3],
-			size,
-			pin
-		);
-
-		if (
-			(vecs[0].distanceTo(B) < 0.01 && vecs[1].distanceTo(A) < 0.01) ||
-			(vecs[0].distanceTo(A) < 0.01 && vecs[1].distanceTo(B) < 0.01)
-		) {
-			console.log(
-				'j2',
-				j,
-				'good ?',
-				isTriangleClockwise(
-					firstTriangle[j % 3],
-					firstTriangle[(j + 1) % 3],
-					firstTriangle[(j + 2) % 3]
-				)
+		for (let j = 0; j < 3; j++) {
+			const vecs = getPin(
+				firstTriangle[j % 3],
+				firstTriangle[(j + 1) % 3],
+				firstTriangle[(j + 2) % 3],
+				size,
+				pin
 			);
-			return [secondTriangle[j % 3], secondTriangle[(j + 1) % 3], secondTriangle[(j + 2) % 3]];
+
+			if (
+				(vecs[0].distanceTo(A) < 0.01 && vecs[1].distanceTo(B) < 0.01) ||
+				(vecs[0].distanceTo(B) < 0.01 && vecs[1].distanceTo(A) < 0.01)
+			) {
+				return [firstTriangle[j % 3], firstTriangle[(j + 1) % 3], firstTriangle[(j + 2) % 3]];
+			}
 		}
 	}
 
@@ -154,7 +109,9 @@ export function _createTriangles(devices: IDevice[], triangles: Triangle[], devi
 			const deviceTriangle = triangles.filter((x) => x.triId === device.id)[0];
 			const deviceVecs = deviceTriangle.getPin(dev.pin);
 
-			const devicePin = devices.filter((x) => x.id === dev.id)[0].connected.filter((x) => x.id === device.id)[0].pin;
+			const devicePin = devices
+				.filter((x) => x.id === dev.id)[0]
+				.connected.filter((x) => x.id === device.id)[0].pin;
 
 			const newVecs = test(deviceVecs[0], deviceVecs[1], deviceVecs[2], devSize, devicePin);
 

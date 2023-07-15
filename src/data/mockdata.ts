@@ -50,6 +50,34 @@ export const deviceslol: IDevice[] = [
 				id: '1',
 				pin: 2
 			},
+			{
+				id: '3',
+				pin: 4
+			}
+		],
+		size: 2
+	},
+	{
+		id: '3',
+		connected: [
+			{
+				id: '2',
+				pin: 2
+			},
+			{
+				id: '4',
+				pin: 6
+			}
+		],
+		size: 3
+	},
+	{
+		id: '4',
+		connected: [
+			{
+				id: '3',
+				pin: 2
+			}
 		],
 		size: 1
 	}
