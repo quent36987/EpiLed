@@ -1,17 +1,18 @@
 <script lang="ts">
 	import Icon from '../images/test2.png';
+	import type { IShape } from '../../interfaces/interfaces';
 
-	export let title: string;
-	export let isSelected: boolean;
+	export let shape: IShape;
+	export let shapeSelected: IShape;
 </script>
 
-<div class="block {isSelected ? 'isSelected' : ''}" on:click>
+<div class="block {shapeSelected === shape ? 'isSelected' : ''}" on:click>
 	<div>
 		<!-- FIXMe by something else -->
 		<img src={Icon} alt="icon" />
 	</div>
 	<div class="title">
-		{title}
+		{shape.title}
 	</div>
 </div>
 

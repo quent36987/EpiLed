@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createEventDispatcher, onMount } from 'svelte';
 	import * as THREE from 'three';
-	import { Triangle } from '$lib/mesh/triangle';
+	import { Triangle } from '$lib/triangles/triangle';
 	import { InteractionManager } from 'three.interactive';
 	import type { IStepAnimation } from '../../interfaces/interfaces';
 	import { EState } from '../../interfaces/enums';
@@ -43,7 +43,7 @@
 			return;
 		}
 
-		scene = new THREE.Scene();
+		scene.clear();
 		scene.background = new THREE.Color('#e3e2e2');
 
 		interactionManager = new InteractionManager(renderer, camera, renderer.domElement);
@@ -52,9 +52,20 @@
 			scene.add(triangle);
 			interactionManager.add(triangle);
 
-			/* triangle.addEventListener('click', (target) => {
-				dispatch('triangleClick', target.target.triId);
-			}); */
+			triangle.addEventListener('click', (target) => {
+				dispatch('deleteTriangle', target.target.triId);
+				target.stopPropagation();
+			});
+
+			triangle.addEventListener('mouseover', (target) => {
+				target.target.material.color.set('red');
+				target.target.position.z = 0.1;
+			});
+
+			triangle.addEventListener('mouseout', (target) => {
+				target.target.material.color.set(triangle.color);
+				target.target.position.z = 0;
+			});
 		}
 
 		let maxX = Math.max(...triangles.map((x) => Math.max(x.vec1.x, x.vec2.x, x.vec3.x)));
@@ -69,10 +80,11 @@
 
 				triangle.addEventListener('click', (target) => {
 					dispatch('triangleClick', target.target.triId);
+					target.stopPropagation();
 				});
 
 				triangle.addEventListener('mouseover', (target) => {
-					target.target.material.color.setHex('blue');
+					target.target.material.color.set('blue');
 					target.target.position.z = 0.1;
 				});
 
@@ -96,8 +108,11 @@
 		camera.position.x = (maxX + minX) / 2;
 		camera.position.y = (maxY + minY) / 2;
 
-		let maxDistance = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2));
-		camera.position.z = Math.max(maxDistance - 1 + zoom, 1);
+		let maxDistance = Math.max(
+			Math.max(Math.abs(minX), Math.abs(maxY)),
+			Math.max(Math.abs(maxX), Math.abs(minY))
+		);
+		camera.position.z = Math.max(maxDistance + zoom, 1);
 	};
 
 	$: {
@@ -150,9 +165,11 @@
 				for (const id of ids) {
 					const tri = triangles.filter((x) => x.triId === id)[0];
 
-					tri.material = new THREE.MeshBasicMaterial({
-						color: s.colors
-					});
+					if (tri) {
+						tri.material = new THREE.MeshBasicMaterial({
+							color: s.colors
+						});
+					}
 				}
 			}
 		}

@@ -1,3 +1,9 @@
+export interface IShape {
+	title: string;
+	id: number;
+	devices: IDevice[];
+}
+
 export interface IDevice {
 	id: string;
 	size: number;

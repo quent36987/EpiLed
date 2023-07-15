@@ -1,51 +1,26 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	interface IBlock {
-		id: number;
-		title: string;
-		isSelected: boolean;
+	import { createEventDispatcher } from 'svelte';
+	import BlockSlector from '$lib/components/BlockSlector.svelte';
+	import type { IShape } from '../../interfaces/interfaces';
+
+	const dispatch = createEventDispatcher();
+	export let shapes: IShape[];
+	export let shapeSelected: IShape;
+
+	function handleClick(shape: IShape) {
+		shapeSelected = shape
 	}
 
-	import BlockSlector from '$lib/components/BlockSlector.svelte';
-
-	let blocks: IBlock[] = [
-		{
-			id: 1,
-			title: 'Block',
-			isSelected: false
-		},
-		{
-			id: 2,
-			title: 'Chambre',
-			isSelected: true
-		},
-		{
-			id: 3,
-			title: 'Salon',
-			isSelected: false
-		}
-	];
-
-	function handleClick(blockId: IBlock) {
-		blocks = blocks.map((block) => {
-			if (block.id === blockId) {
-				return {
-					...block,
-					isSelected: !block.isSelected
-				};
-			}
-			return {
-				...block,
-				isSelected: false
-			};
-		});
+	function onNewDeviceClick() {
+		dispatch('newDevice');
 	}
 </script>
 
 <div class="blocks">
-	{#each blocks as block}
-		<BlockSlector {...block} on:click={() => handleClick(block.id)} />
+	{#each shapes as shape}
+		<BlockSlector on:click={() => handleClick(shape)} bind:shape={shape}  bind:shapeSelected={shapeSelected} />
 	{/each}
-	<div class="new-device">
+	<div class="new-device" on:click={onNewDeviceClick}>
 		<div class="title">
 			<div class="plus">+</div>
 			new device
