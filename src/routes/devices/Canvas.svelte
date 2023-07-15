@@ -73,10 +73,12 @@
 
 				triangle.addEventListener('mouseover', (target) => {
 					target.target.material.color.setHex('blue');
+					target.target.position.z = 0.1;
 				});
 
 				triangle.addEventListener('mouseout', (target) => {
 					target.target.material.color.set(triangle.color);
+					target.target.position.z = 0;
 				});
 			}
 

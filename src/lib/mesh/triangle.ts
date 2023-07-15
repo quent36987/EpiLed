@@ -43,6 +43,8 @@ export class Triangle extends THREE.Mesh {
 
 		const center = new THREE.Vector2((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3);
 
+		scale = scale + Math.min(size / 100, 0.4);
+
 		const newP1 = new THREE.Vector2(p1.x, p1.y).lerp(center, 1 - scale);
 		const newP2 = new THREE.Vector2(p2.x, p2.y).lerp(center, 1 - scale);
 		const newP3 = new THREE.Vector2(p3.x, p3.y).lerp(center, 1 - scale);

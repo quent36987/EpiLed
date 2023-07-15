@@ -207,7 +207,7 @@ export function generateTriangles(triangleList: Triangle[], editSize: number): T
 				const id: string = Math.random().toString(36).substr(2) + Date.now().toString(36);
 
 				const vecs = test(vecPin[0], vecPin[1], vecPin[2], editSize, i);
-				const newTriangle = new Triangle(id, vecs[0], vecs[1], vecs[2], editSize, 'gray');
+				const newTriangle = new Triangle(id, vecs[0], vecs[1], vecs[2], editSize, '#c4bfbf');
 
 				if (!newTriangle.exists(triangleList) && !newTriangle.exists(newTriangles)) {
 					if (!intersept(triangleList, newTriangle)) {
