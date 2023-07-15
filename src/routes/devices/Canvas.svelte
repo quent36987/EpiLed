@@ -5,8 +5,7 @@
 	import { InteractionManager } from 'three.interactive';
 	import type { IStepAnimation } from '../../interfaces/interfaces';
 	import { EState } from '../../interfaces/enums';
-	import { RectAreaLightHelper } from 'three/examples/jsm/helpers/RectAreaLightHelper';
-	import { ArcballControls } from 'three-stdlib';
+ 	import { ArcballControls } from 'three-stdlib';
 
 	export let animation: IStepAnimation;
 	export let triangles: Triangle[];
@@ -34,13 +33,6 @@
 
 		renderer = new THREE.WebGLRenderer({ antialias: true, canvas: canvas });
 
-		const controls = new ArcballControls(camera, renderer.domElement, scene);
-
-		controls.addEventListener('change', function () {
-			renderer.render(scene, camera);
-		});
-
-		controls.update();
 		update();
 		animate();
 		resize();
@@ -55,6 +47,8 @@
 		scene.background = new THREE.Color('#e3e2e2');
 
 		interactionManager = new InteractionManager(renderer, camera, renderer.domElement);
+
+		console.log('triangles', triangles);
 
 		for (const triangle of triangles) {
 			scene.add(triangle);

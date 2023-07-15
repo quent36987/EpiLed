@@ -34,34 +34,88 @@ export function findVectorTriangle(vec1: Vector2, vec2: Vector2, vecOpose: Vecto
 	return vecOpose.distanceTo(vec3a) < vecOpose.distanceTo(vec3b) ? vec3b : vec3a;
 }
 
+export function getPin(vec1: Vector2, vec2: Vector2, vec3: Vector2, size: number, pin: number) {
+	let segment, vecA, vecB, vecC;
+
+	// Determine which of the 3 sides of the triangle the pin belongs to
+	if (pin <= size) {
+		vecA = vec1;
+		vecB = vec2;
+		vecC = vec3;
+		segment = pin - 1;
+	} else if (pin <= 2 * size) {
+		vecA = vec2;
+		vecB = vec3;
+		vecC = vec1;
+		segment = pin - size - 1;
+	} else {
+		vecA = vec3;
+		vecB = vec1;
+		vecC = vec2;
+		segment = pin - 2 * size - 1;
+	}
+
+	// Compute the offset along the side where the pin is
+	const offset = segment / size;
+
+	// Compute the two vectors at the pin location and return them with the opposite vector
+	const pinVec1 = new THREE.Vector2().lerpVectors(vecA, vecB, offset);
+	const pinVec2 = new THREE.Vector2().lerpVectors(vecA, vecB, (segment + 1) / size);
+	return [pinVec1, pinVec2, vecC];
+}
+
+export function isTriangleClockwise(p1: Vector2, p2: Vector2, p3: Vector2) {
+	const area = 0.5 * (p1.x * (p2.y - p3.y) + p2.x * (p3.y - p1.y) + p3.x * (p1.y - p2.y));
+	return area < 0;
+}
+
+export function test(A: Vector2, B: Vector2, C: Vector2, size: number, pin: number) {
+	for (let i = 1; i <= size; i++) {
+		const p1 = new THREE.Vector2().lerpVectors(A, B, i);
+		const p2 = new THREE.Vector2().lerpVectors(A, B, i - size);
+
+		const firstTriangle = [p1, p2, findVectorTriangle(p1, p2, C)];
+		if (!isTriangleClockwise(firstTriangle[0], firstTriangle[1], firstTriangle[2])) {
+			firstTriangle.reverse();
+		}
+
+		for (let j = 0; j < 3; j++) {
+			const vecs = getPin(
+				firstTriangle[j % 3],
+				firstTriangle[(j + 1) % 3],
+				firstTriangle[(j + 2) % 3],
+				size,
+				pin
+			);
+
+			if (
+				(vecs[0].distanceTo(A) < 0.01 && vecs[1].distanceTo(B) < 0.01) ||
+				(vecs[0].distanceTo(B) < 0.01 && vecs[1].distanceTo(A) < 0.01)
+			) {
+				return [firstTriangle[j % 3], firstTriangle[(j + 1) % 3], firstTriangle[(j + 2) % 3]];
+			}
+		}
+	}
+
+	return [];
+}
+
 export function _createTriangles(devices: IDevice[], triangles: Triangle[], device: IDevice) {
 	for (const dev of device.connected) {
 		const hasTriangle = triangles.filter((x) => x.triId === dev.id).length === 0;
+		const devSize = devices.filter((x) => x.id === dev.id)[0].size;
 
 		if (hasTriangle) {
 			const deviceTriangle = triangles.filter((x) => x.triId === device.id)[0];
 			const deviceVecs = deviceTriangle.getPin(dev.pin);
 
-			const vec3 = findVectorTriangle(deviceVecs[0], deviceVecs[1], deviceVecs[2]);
-			let newVecs = [deviceVecs[0], deviceVecs[1], vec3];
-
-			const devPin = devices
+			const devicePin = devices
 				.filter((x) => x.id === dev.id)[0]
 				.connected.filter((x) => x.id === device.id)[0].pin;
 
-			switch (devPin) {
-				case 3:
-					newVecs = [vec3, deviceVecs[0], deviceVecs[1]];
-					break;
-				case 1:
-					newVecs = [deviceVecs[0], deviceVecs[1], vec3];
-					break;
-				case 2:
-					newVecs = [deviceVecs[1], vec3, deviceVecs[0]];
-					break;
-			}
+			const newVecs = test(deviceVecs[0], deviceVecs[1], deviceVecs[2], devSize, devicePin);
 
-			const triangle = new Triangle(dev.id, newVecs[1], newVecs[0], newVecs[2]);
+			const triangle = new Triangle(dev.id, newVecs[0], newVecs[1], newVecs[2], devSize);
 			triangles.push(triangle);
 
 			const new_device = devices.filter((x) => x.id === dev.id)[0];
@@ -79,7 +133,8 @@ export function createTriangles(devices: IDevice[]) {
 		firstDevice.id,
 		new Vector2(0, 0),
 		new Vector2(-0.8, 1),
-		findVectorTriangle(new Vector2(0, 0), new Vector2(-0.8, 1), new Vector2(-1, 0))
+		findVectorTriangle(new Vector2(0, 0), new Vector2(-0.8, 1), new Vector2(-1, 0)),
+		firstDevice.size
 	);
 
 	triangles.push(firstTriangle);
@@ -119,7 +174,7 @@ const createAndAddTriangle = (
 	newTriangles: Triangle[]
 ): void => {
 	const id: string = Math.random().toString(36).substr(2) + Date.now().toString(36);
-	const newTriangle: Triangle = new Triangle(id, vec1, vec2, vec3, color);
+	const newTriangle: Triangle = new Triangle(id, vec1, vec2, vec3, 1, color);
 	if (!newTriangle.exists(triangleList) && !newTriangle.exists(newTriangles)) {
 		newTriangles.push(newTriangle);
 	}

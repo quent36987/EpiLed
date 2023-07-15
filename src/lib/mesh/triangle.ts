@@ -9,12 +9,14 @@ export class Triangle extends THREE.Mesh {
 	vec3: Vector2;
 	border: THREE.LineLoop | null = null;
 	color: string;
+	size: number;
 
 	constructor(
 		triID: string,
 		p1: Vector2,
 		p2: Vector2,
 		p3: Vector2,
+		size: number,
 		color = 'red',
 		percent = 0.1,
 		scale = 0.95
@@ -25,6 +27,7 @@ export class Triangle extends THREE.Mesh {
 		this.vec2 = p2;
 		this.vec3 = p3;
 		this.color = color;
+		this.size = size;
 
 		const center = new THREE.Vector2((p1.x + p2.x + p3.x) / 3, (p1.y + p2.y + p3.y) / 3);
 
@@ -56,6 +59,18 @@ export class Triangle extends THREE.Mesh {
 			side: THREE.DoubleSide
 		});
 
+		const cc = this.triId === '1' ? 'red' : 'green';
+		//add a circle on vec1
+		const circle = new THREE.CircleGeometry(0.05);
+		const circleMesh = new THREE.Mesh(circle, new THREE.MeshBasicMaterial({ color: cc }));
+		circleMesh.position.set(p1.x, p1.y, 0.1);
+		this.add(circleMesh);
+
+		//add square on vec2
+		const square = new THREE.BoxGeometry(0.1, 0.1, 0.1);
+		const squareMesh = new THREE.Mesh(square, new THREE.MeshBasicMaterial({ color: cc }));
+		squareMesh.position.set(p2.x, p2.y, 0.1);
+		this.add(squareMesh);
 
 		super.updateMorphTargets();
 	}
@@ -135,15 +150,32 @@ export class Triangle extends THREE.Mesh {
 	}
 
 	getPin(pin: number) {
-		switch (pin) {
-			case 1:
-				return [this.vec1, this.vec2, this.vec3];
-			case 2:
-				return [this.vec2, this.vec3, this.vec1];
-			case 3:
-				return [this.vec3, this.vec1, this.vec2];
-			default:
-				return [this.vec1, this.vec2, this.vec3];
+		let segment, vecA, vecB, vecC;
+
+		// Determine which of the 3 sides of the triangle the pin belongs to
+		if (pin <= this.size) {
+			vecA = this.vec1;
+			vecB = this.vec2;
+			vecC = this.vec3;
+			segment = pin - 1;
+		} else if (pin <= 2 * this.size) {
+			vecA = this.vec2;
+			vecB = this.vec3;
+			vecC = this.vec1;
+			segment = pin - this.size - 1;
+		} else {
+			vecA = this.vec3;
+			vecB = this.vec1;
+			vecC = this.vec2;
+			segment = pin - 2 * this.size - 1;
 		}
+
+		// Compute the offset along the side where the pin is
+		const offset = segment / this.size;
+
+		// Compute the two vectors at the pin location and return them with the opposite vector
+		const pinVec1 = new THREE.Vector2().lerpVectors(vecA, vecB, offset);
+		const pinVec2 = new THREE.Vector2().lerpVectors(vecA, vecB, (segment + 1) / this.size);
+		return [pinVec1, pinVec2, vecC];
 	}
 }
