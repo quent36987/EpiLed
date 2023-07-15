@@ -1,168 +1,190 @@
 <script>
-	import image1 from './proto_1.png';
-	import image2 from './proto_2.png';
-	import image3 from './proto_3.png';
-	import image4 from './proto_4.png';
+    import image1 from '../../lib/images/about/proto_1.png';
+    import image2 from '../../lib/images/about/proto_2.png';
+	import image3 from '../../lib/images/about/proto_3.png';
+	import image4 from '../../lib/images/about/proto_4.png';
 
-	import circuit1 from './circuits_1.png';
-	import circuit2 from './circuits_2.png';
-	import circuit3 from './circuits_3.png';
-	import circuit4 from './circuits_4.png';
-	import circuit5 from './circuits_5.png';
-	import circuit6 from './circuits_6.png';
+    import circuit1 from '../../lib/images/about/circuits_1.png';
+    import circuit2 from '../../lib/images/about/circuits_2.png';
+    import circuit5 from '../../lib/images/about/circuits_5.png';
+    import circuit6 from '../../lib/images/about/circuits_6.png';
+    import circuit3 from '../../lib/images/about/circuits_3.png';
 
-	const images = [image1, image2, image3, image4];
-	const images2 = [circuit1, circuit2, circuit3, circuit4, circuit5, circuit6];
-
-	let hoveredIndex = null;
-	function setHoveredIndex(i) {
-		hoveredIndex = i;
-	}
+    const images = [image1, image2, image3, image4];
+    const images2 = [circuit1, circuit2, circuit5, circuit6];
 </script>
 
 <style>
     @import url('https://fonts.googleapis.com/css?family=Work+Sans:300,400&display=swap');
 
-	.header {
-		background-image: url('./web-Header-Background.jpg');
-		background-position: center;
-		background-size: cover;
-		color: #fff;
-		text-align: center;
-		padding: 2em 0;
-		font-family: 'Work Sans', sans-serif;
-		font-size: 36px;
-		font-weight: 700;
-	}
+    body {
+        background-color: #ffffff;
+    }
 
-	.container {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 1em;
-		padding: 1em;
-		font-family: 'Work Sans', sans-serif;
-	}
+    .header {
+        background-image: url('../../lib/images/about/web-Header-Background.jpg');
+        background-position: center;
+        background-size: cover;
+        color: #fff;
+        text-align: center;
+        padding: 2em 0;
+        font-family: 'Work Sans', sans-serif;
+        font-size: 36px;
+        font-weight: 700;
+    }
 
-	.text-column {
-		flex: 1;
-		margin-right: 1em;
-		color: #363537;
-		font-family: 'Work Sans', sans-serif;
-		padding: 1em;
-		background-color: #f9f9f9;
-	}
+    .container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1em;
+        padding: 1em;
+        font-family: 'Work Sans', sans-serif;
+    }
 
-	.text-column h1 {
-		color: blue;
-	}
+    .text-column {
+        flex: 1;
+        margin-right: 1em;
+        color: #363537;
+        font-family: 'Work Sans', sans-serif;
+        padding: 1em;
+    }
 
-	.text-column p {
-		margin-bottom: 1em;
-		color: black;
-	}
+    .text-column h1 {
+        color: blue;
+    }
 
-	.text-column a {
-		color: #1f77b4;
-		text-decoration: none;
-	}
+    .text-column p {
+        margin-bottom: 1em;
+        color: black;
+    }
 
-	.text-column a:hover {
-		color: #2ca02c;
-	}
+    .text-column a {
+        color: #1f77b4;
+        text-decoration: none;
+    }
 
-	.github-container {
-		display: flex;
-		justify-content: center;
-		font-family: 'Work Sans', sans-serif;
-	}
+    .text-column a:hover {
+        color: #2ca02c;
+    }
 
-	.github-img {
-		width: 50px;
-		height: 50px;
-	}
+    .github-container {
+        display: flex;
+        justify-content: center;
+        font-family: 'Work Sans', sans-serif;
+    }
 
-	.square {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: space-around;
-		width: 90%;
-		margin: auto;
-	}
+    .github-img {
+        width: 50px;
+        height: 50px;
+    }
 
-	.square img {
-		width: 48%;
-		height: auto;
-		margin: 1%;
-		border-radius: 15px;
-		transform: rotate(-10deg);
-		transition: transform 0.5s;
-	}
+    .square {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        width: 90%;
+        margin: auto;
+    }
 
-	.square img:nth-child(2) {
-		transform: rotate(10deg);
-	}
+    .square img {
+        width: 48%;
+        height: auto;
+        margin: 1%;
+        border-radius: 15px;
+        transform: rotate(-10deg);
+        transition: transform 0.5s;
+    }
 
-	.square img:nth-child(3) {
-		transform: rotate(-20deg);
-	}
+    .square img:nth-child(2) {
+        transform: rotate(10deg);
+    }
 
-	.square img:nth-child(4) {
-		transform: rotate(20deg);
-	}
+    .square img:nth-child(3) {
+        transform: rotate(-20deg);
+    }
 
-	.square img:hover {
-		transform: rotate(0deg) scale(1.2);
-		z-index: 1;
-	}
+    .square img:nth-child(4) {
+        transform: rotate(20deg);
+    }
 
-	.rectangle {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		grid-template-rows: repeat(3, 1fr);
-		gap: 0.5em;
-		width: 100%;
-		margin: auto;
-		position: relative;
-	}
+    .square img:hover {
+        transform: rotate(0deg) scale(1.2);
+        z-index: 1;
+    }
 
-	.rectangle div {
-		width: 100%;
-		height: 0;
-		padding-bottom: 50%;
-		position: relative;
-	}
+    .rectangle {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 0.5em;
+        width: 100%;
+        margin: auto;
+        position: relative;
+    }
 
-	.rectangle img {
-		width: 100%;
-		height: 100%;
-		position: absolute;
-		border-radius: 15px;
-		transform: rotate(-10deg);
-		transition: transform 0.5s;
-	}
+    .rectangle div {
+        width: 100%;
+        height: 0;
+        padding-bottom: 50%;
+        position: relative;
+    }
 
-	.rectangle div:nth-child(2n) img {
-		transform: rotate(10deg);
-	}
+    .rectangle img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        border-radius: 15px;
+        transform: rotate(-10deg);
+        transition: transform 0.5s;
+    }
 
-	.rectangle div:nth-child(2n+1) img {
-		transform: rotate(-10deg);
-	}
+    .rectangle div:nth-child(2n) img {
+        transform: rotate(10deg);
+    }
 
+    .rectangle div:nth-child(2n+1) img {
+        transform: rotate(-10deg);
+    }
 
-.rectangle div:nth-child(2n) img:hover,
-.rectangle div:nth-child(2n+1) img:hover {
-	transform: rotate(0deg) scale(1.2);
-	z-index: 1;
-}
+    .rectangle div:nth-child(2n) img:hover,
+    .rectangle div:nth-child(2n+1) img:hover {
+        transform: rotate(0deg) scale(1.2);
+        z-index: 1;
+    }
 
+    .image-description {
+        font-family: 'Work Sans', sans-serif;
+        padding: 1em;
+    }
 
-	.image-description {
-		font-family: 'Work Sans', sans-serif;
-		padding: 1em;
-		background-color: #f9f9f9;
-	}
+    .lorem-section-with-image {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Work Sans', sans-serif;
+        padding: 1em;
+        margin-top: 1em;
+    }
+
+    .lorem-section-with-image img {
+        max-width: 30%;
+        height: auto;
+        margin-left: 1em;
+    }
+
+    .big-image-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 1em;
+    }
+
+    .big-image {
+        max-width: 100%;
+        border-radius: 15px;
+    }
 </style>
+
 
 <svelte:head>
 	<title>About</title>
@@ -218,12 +240,17 @@
 			<br/>
 			<strong>Who are we ?</strong>. <br/>
 		</p>
-
 		<p>
 			<br/>
 			We are a team made from Epita's 2024 IF promotion. Currently in ING2 (almost in ING3!), we work on this project as a team under the supervision of <code>Christian Diaconu</code>. 
 		</p>
-		<p>
-			<br/>		</p>
 	</div>
+
+	<div class="lorem-section-with-image">
+		<p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam maximus mauris mollis, efficitur mauris et, convallis tellus. 
+			Aenean sed condimentum leo, nec condimentum lorem. Sed in auctor nisl, nec facilisis elit. Morbi non arcu ac sem pharetra accumsan at non erat. </p>
+	</div>
+	<div class="big-image-container">
+        <img class="big-image" src="{circuit3}" alt="Circuit design 3" />
+    </div>
 </div>
