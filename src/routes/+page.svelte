@@ -65,7 +65,6 @@
 		height: 480px;
 		border-radius: 8px;
 		align-self: center;
-		margin: 1rem;
 		display: flex;
 		position: relative;
 		cursor: pointer;

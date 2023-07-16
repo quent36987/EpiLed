@@ -1,24 +1,18 @@
 <script lang="ts">
 	import ListBlockSlector from '$lib/components/ListBlockSlector.svelte';
 	import Tabs from './Tabs.svelte';
-	import type {
-		IAnimation,
-		IDevice,
-		ILed,
-		IShape,
-		IStepAnimation
-	} from '../../interfaces/interfaces';
-	import { ANIMATIONS, deviceslol } from '../../data/mockdata';
+	import type { IAnimation, ILed, IShape, IStepAnimation } from '../../interfaces/interfaces';
 	import { Triangle } from '$lib/triangles/triangle';
 	import { createLeds, createTriangles, generateTriangles } from '$lib/triangles/utils';
 	import { onMount } from 'svelte';
 	import Canvas from './Canvas.svelte';
 	import { EState } from '../../interfaces/enums';
-	import Toggle from '../../annimations/components/Toggle.svelte';
-	import ToggleSize from '../../annimations/components/ToggleSize.svelte';
+	import Toggle from '../../animations/components/Toggle.svelte';
+	import ToggleSize from '../../animations/components/ToggleSize.svelte';
 	import { supabase } from '../../supabaseClient';
-	import SettingButtons from '../../annimations/components/SettingButtons.svelte';
+	import SettingButtons from '../../animations/components/SettingButtons.svelte';
 	import { session } from '../../store/store';
+	import { ANIMATIONS } from '../../data/data';
 
 	let shapes: IShape[] = [];
 	let leds: ILed[] = [];
@@ -42,15 +36,13 @@
 		}
 	});
 
-	// $: devices = shapeSelected?.devices ?? deviceslol;
-	// $: moreTriangles = generateTriangles(triangles, editSize);
-
 	let createConfig = (modules) => {
 		let config = {};
 
 		modules.forEach((module) => {
 			if (module.range) config[module.name] = module.range.value;
 			else if (module.color) config[module.name] = module.color.value;
+			else if (module.toggle) config[module.name] = module.toggle.value;
 		});
 
 		return config;

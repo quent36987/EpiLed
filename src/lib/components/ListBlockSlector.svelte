@@ -1,9 +1,8 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	import { createEventDispatcher } from 'svelte';
 	import BlockSlector from '$lib/components/BlockSlector.svelte';
 	import type { IShape } from '../../interfaces/interfaces';
 	import { supabase } from '../../supabaseClient';
-	import { session } from '../../store/store';
+	import { addToast, session } from '../../store/store';
 
 	export let shapes: IShape[];
 	export let shapeSelected: IShape;
@@ -19,16 +18,41 @@
 	});
 
 	const onNewDeviceClick = async () => {
+		const newShape: IShape = {
+			id: 0,
+			owner_id: 0,
+			title: 'New device',
+			devices: [
+				{
+					id: '0',
+					size: 1,
+					connected: []
+				}
+			]
+		};
+
+		if (!my_session) {
+			addToast({
+				ype: 'info',
+				message: 'Becareful, you need to be logged in to save your device.',
+				timeout: 3000,
+				dismissible: true
+			});
+
+			shapes.push(newShape);
+			shapeSelected = newShape;
+
+			return;
+		}
+
 		const title = prompt('Enter device name', 'New device');
 		try {
-			console.log('user', my_session.user);
-
 			const { data, error, status } = await supabase
 				.from('shapes')
 				.insert([
 					{
-						owner_id: my_session.user.id,
 						title: title,
+						owner_id: my_session.user.id,
 						devices: [
 							{
 								id: '0',
@@ -52,8 +76,6 @@
 				console.log(error.message);
 			}
 		}
-
-
 	};
 </script>
 

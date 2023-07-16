@@ -2,33 +2,45 @@
 	import { DeleteOutlined, EditOutlined, SaveOutlined } from 'svelte-ant-design-icons';
 	import type { IShape } from '../../interfaces/interfaces';
 	import { supabase } from '../../supabaseClient';
-	import { addToast } from '../../store/store';
+	import { addToast, session } from '../../store/store';
 
 	export let shape: IShape;
 
+	let my_session;
+
+	session.subscribe((value) => {
+		my_session = value;
+	});
+
 	const onSave = async () => {
-		console.log('save');
-		const { data, error } = await supabase.from('shapes').upsert(shape);
+		if (!my_session) {
+			addToast({
+				type: 'error',
+				message: 'You must be logged in to save shapes',
+				timeout: 3000,
+				dismissible: true
+			});
+			return;
+		}
+
+		await supabase.from('shapes').upsert(shape);
 		addToast({ type: 'success', message: 'Shape saved', timeout: 2000, dismissible: true });
-		console.log(data, error);
 	};
 
 	const onEdit = async () => {
-		console.log('edit');
 		shape.title = prompt('Enter a new name for this shape', shape.title);
 		addToast({ type: 'success', message: 'Shape name updated', timeout: 2000, dismissible: true });
 	};
 
 	const onDelete = async () => {
 		if (confirm('Are you sure you want to delete this?')) {
-			const error = await supabase.from('shapes').delete().match({ id: shape.id }).single();
+			await supabase.from('shapes').delete().match({ id: shape.id }).single();
 			addToast({
 				type: 'success',
 				message: 'Shape deleted',
 				timeout: 2000,
 				dismissible: true
 			});
-			console.log(error);
 		}
 	};
 </script>

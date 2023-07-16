@@ -54,4 +54,7 @@ export interface IModule {
 	color?: {
 		value: string;
 	};
+	toggle?: {
+		value: boolean;
+	}
 }
