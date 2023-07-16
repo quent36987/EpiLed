@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { Triangle } from '$lib/mesh/triangle';
+import { Triangle } from '$lib/triangles/triangle';
 import type { IDevice, ILed } from '../../interfaces/interfaces';
 import { Vector2 } from 'three';
 
@@ -75,6 +75,7 @@ export function test(A: Vector2, B: Vector2, C: Vector2, size: number, pin: numb
 		const p2 = new THREE.Vector2().lerpVectors(A, B, i - size);
 
 		const firstTriangle = [p1, p2, findVectorTriangle(p1, p2, C)];
+
 		if (!isTriangleClockwise(firstTriangle[0], firstTriangle[1], firstTriangle[2])) {
 			firstTriangle.reverse();
 		}
@@ -129,6 +130,7 @@ export function createTriangles(devices: IDevice[]) {
 
 	const firstDevice = devices[0];
 
+	// FIXME maybe use a better starting point
 	const firstTriangle = new Triangle(
 		firstDevice.id,
 		new Vector2(0, 0),
@@ -165,59 +167,30 @@ export function createLeds(triangles: Triangle[]) {
 	return leds;
 }
 
-const createAndAddTriangle = (
-	vec1: Vector2,
-	vec2: Vector2,
-	vec3: Vector2,
-	color: string,
-	triangleList: Triangle[],
-	newTriangles: Triangle[]
-): void => {
-	const id: string = Math.random().toString(36).substr(2) + Date.now().toString(36);
-	const newTriangle: Triangle = new Triangle(id, vec1, vec2, vec3, 1, color);
-	if (!newTriangle.exists(triangleList) && !newTriangle.exists(newTriangles)) {
-		newTriangles.push(newTriangle);
-	}
-};
-
-function intersept(triangleList: Triangle[], triangle: Triangle): boolean {
-	for (const tri of triangleList) {
-		if (tri.intersects(triangle)) {
-			return true;
-		}
-	}
-	return false;
-}
-
 export function generateTriangles(triangleList: Triangle[], editSize: number): Triangle[] {
 	const newTriangles: Triangle[] = [];
-
-	// faut parcourir tt les pin de chaque triangle
-	// for i sur size
-	// créer un tri de size edit size et connecter pin i sur le pin de triangle
-	// si il empiete sur un truc déja codé on le skip
-	// sinon on met de coté
-	// on verifi que ya pas un trinagle avec les meme angle qui existe dans ceux mi de coté
 
 	for (const triangle of triangleList) {
 		for (let pin = 1; pin <= triangle.size * 3; pin++) {
 			const vecPin = triangle.getPin(pin);
 
-			for (let i = 1; i <= editSize; i += 1) {
+			for (let newPin = 1; newPin <= editSize; newPin += 1) {
 				const id: string = Math.random().toString(36).substr(2) + Date.now().toString(36);
 
-				const vecs = test(vecPin[0], vecPin[1], vecPin[2], editSize, i);
+				const vecs = test(vecPin[0], vecPin[1], vecPin[2], editSize, newPin);
 				const newTriangle = new Triangle(id, vecs[0], vecs[1], vecs[2], editSize, '#c4bfbf');
 
-				if (!newTriangle.exists(triangleList) && !newTriangle.exists(newTriangles)) {
-					if (!intersept(triangleList, newTriangle)) {
-						newTriangle.triangleCreationInfo = {
-							pinConnected: i,
-							withTriangleId: triangle.triId,
-							inTrianglePin: pin
-						};
-						newTriangles.push(newTriangle);
-					}
+				if (
+					!newTriangle.exists(newTriangles) &&
+					!triangleList.some((tri) => tri.intersects(newTriangle))
+				) {
+					newTriangle.triangleCreationInfo = {
+						pinConnected: newPin,
+						withTriangleId: triangle.triId,
+						inTrianglePin: pin
+					};
+
+					newTriangles.push(newTriangle);
 				}
 			}
 		}

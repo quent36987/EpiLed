@@ -1,3 +1,10 @@
+export interface IShape {
+	title: string;
+	id: number;
+	devices: IDevice[];
+	owner_id: number;
+}
+
 export interface IDevice {
 	id: string;
 	size: number;
@@ -47,4 +54,7 @@ export interface IModule {
 	color?: {
 		value: string;
 	};
+	toggle?: {
+		value: boolean;
+	}
 }

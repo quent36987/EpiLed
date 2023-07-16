@@ -2,8 +2,8 @@
 	import { Tabs, TabItem } from 'flowbite-svelte';
 	import AlertFilled from 'svelte-ant-design-icons/AlertFilled.svelte';
 	import type { IAnimation } from '../../interfaces/interfaces';
-	import AnimationList from '../../annimations/components/AnimationList.svelte';
-	import PropertiesBar from '../../annimations/components/PropertiesBar.svelte';
+	import AnimationList from '../../animations/components/AnimationList.svelte';
+	import PropertiesBar from '../../animations/components/PropertiesBar.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { ProjectOutlined, SettingOutlined } from 'svelte-ant-design-icons';
 
@@ -18,6 +18,7 @@
 
 	$: {
 		animationSelected;
+		console.log(animationSelected?.modules)
 		dispatch('updateModule');
 	}
 </script>
@@ -25,7 +26,7 @@
 <div class="tabs">
 	<Tabs contentClass>
 		<TabItem open>
-			<div slot="title" class="flex items-center gap-2">
+			<div slot="title" class="flex items-center gap-1">
 				<AlertFilled class="w-5 h-5" />
 				Animation
 			</div>
@@ -34,7 +35,7 @@
 		</TabItem>
 
 		<TabItem>
-			<div slot="title" class="flex items-center gap-2">
+			<div slot="title" class="flex items-center gap-1">
 				<ProjectOutlined class="w-5 h-5" />
 				Properties
 			</div>
@@ -43,7 +44,7 @@
 		</TabItem>
 
 		<TabItem>
-			<div slot="title" class="flex items-center gap-2">
+			<div slot="title" class="flex items-center gap-1">
 				<SettingOutlined class="w-5 h-5" />
 				Settings
 			</div>

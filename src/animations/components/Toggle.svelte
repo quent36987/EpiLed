@@ -21,7 +21,7 @@
 		Pause
 	</button>
 	<button
-		class="toggle-button {(state === EState.EDITING) === 'edit' ? 'active' : ''}"
+		class="toggle-button {(state === EState.EDITING) ? 'active' : ''}"
 		on:click={() => (state = EState.EDITING)}
 	>
 		<EditOutlined class="w-5 h-5 mr-1" />
@@ -59,7 +59,7 @@
 	}
 
 	.toggle-button:hover {
-		transform: scale(1.04);
+		transform: scale(1.1);
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 </style>

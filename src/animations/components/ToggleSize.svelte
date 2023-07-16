@@ -17,6 +17,10 @@
 		<BorderOutlined class="w-6 h-6 mr-1" />
 		3
 	</button>
+	<button class="toggle-button {size === 4 ? 'active' : ''}" on:click={() => (size = 4)}>
+		<BorderOutlined class="w-7 h-7 mr-1" />
+		4
+	</button>
 </div>
 
 <style>
@@ -49,7 +53,7 @@
 	}
 
 	.toggle-button:hover {
-		transform: scale(1.04);
+		transform: scale(1.1);
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 </style>

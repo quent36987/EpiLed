@@ -2,6 +2,7 @@
 	import RangeBar from './RangeBar.svelte';
 	import ColorBar from './ColorBar.svelte';
 	import type { IAnimation } from '../../interfaces/interfaces';
+	import ToggleBar from "./ToggleBar.svelte";
 
 	export let animation: IAnimation | undefined;
 </script>
@@ -16,6 +17,10 @@
 
 				{#if module.color}
 					<ColorBar bind:module />
+				{/if}
+
+				{#if module.toggle}
+					<ToggleBar bind:module />
 				{/if}
 				<hr />
 			</div>

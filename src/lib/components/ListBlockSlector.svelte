@@ -1,51 +1,89 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	interface IBlock {
-		id: number;
-		title: string;
-		isSelected: boolean;
-	}
-
 	import BlockSlector from '$lib/components/BlockSlector.svelte';
+	import type { IShape } from '../../interfaces/interfaces';
+	import { supabase } from '../../supabaseClient';
+	import { addToast, session } from '../../store/store';
 
-	let blocks: IBlock[] = [
-		{
-			id: 1,
-			title: 'Block',
-			isSelected: false
-		},
-		{
-			id: 2,
-			title: 'Chambre',
-			isSelected: true
-		},
-		{
-			id: 3,
-			title: 'Salon',
-			isSelected: false
-		}
-	];
+	export let shapes: IShape[];
+	export let shapeSelected: IShape;
 
-	function handleClick(blockId: IBlock) {
-		blocks = blocks.map((block) => {
-			if (block.id === blockId) {
-				return {
-					...block,
-					isSelected: !block.isSelected
-				};
-			}
-			return {
-				...block,
-				isSelected: false
-			};
-		});
+	function handleClick(shape: IShape) {
+		shapeSelected = shape;
 	}
+
+	let my_session;
+
+	session.subscribe((value) => {
+		my_session = value;
+	});
+
+	const onNewDeviceClick = async () => {
+		const newShape: IShape = {
+			id: 0,
+			owner_id: 0,
+			title: 'New device',
+			devices: [
+				{
+					id: '0',
+					size: 1,
+					connected: []
+				}
+			]
+		};
+
+		if (!my_session) {
+			addToast({
+				ype: 'info',
+				message: 'Becareful, you need to be logged in to save your device.',
+				timeout: 3000,
+				dismissible: true
+			});
+
+			shapes.push(newShape);
+			shapeSelected = newShape;
+
+			return;
+		}
+
+		const title = prompt('Enter device name', 'New device');
+		try {
+			const { data, error, status } = await supabase
+				.from('shapes')
+				.insert([
+					{
+						title: title,
+						owner_id: my_session.user.id,
+						devices: [
+							{
+								id: '0',
+								size: 1,
+								connected: []
+							}
+						]
+					}
+				])
+				.select();
+
+			console.log('data', data, 'error', error, 'status', status);
+
+			if (data) {
+				shapes.push(data[0]);
+				shapeSelected = data[0];
+			}
+			if (error && status !== 406) throw error;
+		} catch (error) {
+			if (error instanceof Error) {
+				console.log(error.message);
+			}
+		}
+	};
 </script>
 
 <div class="blocks">
-	{#each blocks as block}
-		<BlockSlector {...block} on:click={() => handleClick(block.id)} />
+	{#each shapes as shape}
+		<BlockSlector on:click={() => handleClick(shape)} bind:shape bind:shapeSelected />
 	{/each}
-	<div class="new-device">
+	<div class="new-device" on:click={onNewDeviceClick}>
 		<div class="title">
 			<div class="plus">+</div>
 			new device
