@@ -1,3 +1,9 @@
+export interface ISharingShape {
+	id: number;
+	shape: IShape;
+	animation?: IStepAnimation;
+}
+
 export interface IShape {
 	title: string;
 	id: number;

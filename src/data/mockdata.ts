@@ -1,4 +1,26 @@
-import type { IDevice } from '../interfaces/interfaces';
+import type { IDevice, IShape, ISharingShape } from '../interfaces/interfaces';
+
+export const generateDevices = (triangleCount: number): IDevice[] => {
+	const devices: IDevice[] = [];
+
+	for (let i = 1; i <= triangleCount; i++) {
+		const device: IDevice = {
+			id: i.toString(),
+			connected: [],
+			size: 3,
+		};
+
+		const prevId = i === 1 ? triangleCount : i - 1;
+		const nextId = i === triangleCount ? 1 : i + 1;
+
+		device.connected.push({ id: prevId.toString(), pin: 2 });
+		device.connected.push({ id: nextId.toString(), pin: 4 });
+
+		devices.push(device);
+	}
+
+	return devices;
+}
 
 export const deviceslol: IDevice[] = [
 	{
@@ -34,6 +56,56 @@ export const deviceslol: IDevice[] = [
 			}
 		],
 		size: 3
+	}
+];
+
+const shape: IShape = {
+	title: 'title',
+	id: 0,
+	devices: deviceslol,
+	owner_id: 5828
+};
+
+export const sharingShapes: ISharingShape[] = [
+	{
+		id: 0,
+		shape: shape
+	},
+	{
+		id: 1,
+		shape: shape
+	},
+	{
+		id: 2,
+		shape: shape
+	},
+	{
+		id: 3,
+		shape: shape
+	},
+	{
+		id: 4,
+		shape: shape
+	},
+	{
+		id: 5,
+		shape: shape
+	},
+	{
+		id: 6,
+		shape: shape
+	},
+	{
+		id: 7,
+		shape: shape
+	},
+	{
+		id: 8,
+		shape: shape
+	},
+	{
+		id: 9,
+		shape: shape
 	}
 ];
 

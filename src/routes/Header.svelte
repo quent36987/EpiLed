@@ -78,10 +78,10 @@
 					About
 				</div>
 			</NavLi>
-			<NavLi href="/shop">
+			<NavLi href="/store">
 				<div class="link">
 					<EuroCircleOutlined class="w-5 h-5" />
-					Shop
+					Store
 				</div>
 			</NavLi>
 			<NavLi href="/login">

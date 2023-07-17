@@ -23,10 +23,10 @@
 		</div>
 	</div>
 	<div class="card">
-		<a href="/shop"> <img class="card-image" alt="" href="/" src={shop} /> </a>
+		<a href="/store"> <img class="card-image" alt="" href="/" src={shop} /> </a>
 		<div class="content">
 			<h3>Shop</h3>
-			<h2>Visite EpiLed shop</h2>
+			<h2>Visite EpiLed store</h2>
 		</div>
 	</div>
 	<div class="card">
