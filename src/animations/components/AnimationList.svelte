@@ -5,6 +5,12 @@
 	export let animations: IAnimation[];
 	export let animationSelected: IAnimation;
 
+	let filter = '';
+
+	$: animationsFiltered = animations.filter((animation) =>
+		animation.title.toUpperCase().includes(filter.toUpperCase())
+	);
+
 	const dispatch = createEventDispatcher();
 
 	const onAnimationClick = (animation: IAnimation) => {
@@ -13,7 +19,9 @@
 </script>
 
 <div class="container">
-	{#each animations as animation}
+	<input type="text" placeholder="Search animation" class="search" bind:value={filter} />
+
+	{#each animationsFiltered as animation}
 		<div
 			class="animation {animation === animationSelected ? 'selected' : ''}"
 			on:click={() => onAnimationClick(animation)}
@@ -29,6 +37,15 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+	}
+
+	.search {
+		border-radius: var(--spacing-s);
+		padding: var(--spacing-s) var(--spacing-m);
+		width: 100%;
+		margin-top: var(--spacing-s);
+		margin-right: var(--spacing-s);
+		margin-left: var(--spacing-s);
 	}
 
 	.animation {

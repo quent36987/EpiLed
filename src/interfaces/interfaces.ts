@@ -43,7 +43,6 @@ export interface IStepAnimation {
 
 export interface IStep {
 	ids: string[];
-	leds?: Array<{ number: number; color: string; intensity: number }>;
 	colors?: string;
 	intensities?: number;
 	timecode: number;

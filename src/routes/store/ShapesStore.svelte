@@ -48,6 +48,13 @@
 		position: relative;
 	}
 
+	.shape:hover {
+		transform: scale(1.07);
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+		cursor: pointer;
+		transition: all 0.1s ease-in-out;
+	}
+
 	.bigger {
 		position: absolute;
 		right: 5%;
@@ -56,7 +63,6 @@
 	}
 
 	.canvas {
-
 		border-radius: var(--spacing-s);
 		margin-bottom: var(--spacing-s);
 		overflow: hidden;

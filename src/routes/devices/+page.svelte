@@ -268,6 +268,7 @@
 		margin-top: var(--spacing-s);
 		flex-grow: 3;
 		margin-bottom: var(--spacing-s);
+		height: 80%;
 	}
 
 	#right {
