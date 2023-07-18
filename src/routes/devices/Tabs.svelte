@@ -1,14 +1,18 @@
 <script lang="ts">
 	import { Tabs, TabItem } from 'flowbite-svelte';
 	import AlertFilled from 'svelte-ant-design-icons/AlertFilled.svelte';
-	import type { IAnimation } from '../../interfaces/interfaces';
+	import type { IAnimation, IShape } from '../../interfaces/interfaces';
 	import AnimationList from '../../animations/components/AnimationList.svelte';
 	import PropertiesBar from '../../animations/components/PropertiesBar.svelte';
 	import { createEventDispatcher } from 'svelte';
-	import { ProjectOutlined, SettingOutlined } from 'svelte-ant-design-icons';
+	import { LayoutOutlined, ProjectOutlined } from 'svelte-ant-design-icons';
+	import Layers from '../../animations/components/Layers.svelte';
 
 	export let animations: IAnimation[];
 	export let animationSelected: IAnimation | undefined;
+	export let shape: IShape;
+
+	$: layers = shape?.layers ?? [];
 
 	const dispatch = createEventDispatcher();
 
@@ -18,7 +22,7 @@
 
 	$: {
 		animationSelected;
-		console.log(animationSelected?.modules)
+		console.log(animationSelected?.modules);
 		dispatch('updateModule');
 	}
 </script>
@@ -45,9 +49,11 @@
 
 		<TabItem>
 			<div slot="title" class="flex items-center gap-1">
-				<SettingOutlined class="w-5 h-5" />
-				Settings
+				<LayoutOutlined class="w-5 h-5" />
+				Layers
 			</div>
+
+			<Layers bind:layers />
 		</TabItem>
 	</Tabs>
 </div>

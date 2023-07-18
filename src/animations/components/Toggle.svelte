@@ -21,11 +21,19 @@
 		Pause
 	</button>
 	<button
-		class="toggle-button {(state === EState.EDITING) ? 'active' : ''}"
+		class="toggle-button {state === EState.EDITING ? 'active' : ''}"
 		on:click={() => (state = EState.EDITING)}
 	>
 		<EditOutlined class="w-5 h-5 mr-1" />
 		Edit
+	</button>
+
+	<button
+		class="toggle-button {state === EState.LAYERS ? 'active' : ''}"
+		on:click={() => (state = EState.LAYERS)}
+	>
+		<EditOutlined class="w-5 h-5 mr-1" />
+		Layers
 	</button>
 </div>
 

@@ -28,7 +28,8 @@
 					size: 1,
 					connected: []
 				}
-			]
+			],
+			layers: []
 		};
 
 		if (!my_session) {
@@ -59,7 +60,8 @@
 								size: 1,
 								connected: []
 							}
-						]
+						],
+						layers: []
 					}
 				])
 				.select();

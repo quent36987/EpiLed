@@ -62,7 +62,6 @@
 	}
 
 	onMount(() => {
-		console.log('on mount');
 		leds = createLeds(triangles);
 
 		update();
@@ -190,7 +189,6 @@
 
 	$: {
 		shapeSelected;
-		console.log('shapeSelected', shapeSelected);
 		if (shapeSelected) {
 			triangles = createTriangles(shapeSelected.devices);
 			moreTriangles = generateTriangles(triangles, editSize);
@@ -232,6 +230,7 @@
 				<Tabs
 					bind:animations
 					bind:animationSelected
+					bind:shape={shapeSelected}
 					on:animationClick={onAnimationClick}
 					on:updateModule={updateModule}
 				/>

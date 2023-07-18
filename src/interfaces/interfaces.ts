@@ -4,10 +4,17 @@ export interface ISharingShape {
 	animation?: IStepAnimation;
 }
 
+export interface ILayer {
+	id: number;
+	leds: string[];
+	animation?: IAnimation;
+}
+
 export interface IShape {
 	title: string;
 	id: number;
 	devices: IDevice[];
+	layers: ILayer[];
 	owner_id: number;
 }
 
@@ -61,5 +68,5 @@ export interface IModule {
 	};
 	toggle?: {
 		value: boolean;
-	}
+	};
 }
