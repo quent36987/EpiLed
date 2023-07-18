@@ -1,14 +1,16 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
 	import BlockSlector from '$lib/components/BlockSlector.svelte';
-	import type { IShape } from '../../interfaces/interfaces';
+	import type { ILayer, IShape } from '../../interfaces/interfaces';
 	import { supabase } from '../../supabaseClient';
 	import { addToast, session } from '../../store/store';
 
 	export let shapes: IShape[];
 	export let shapeSelected: IShape;
+	export let layerSelected: ILayer | undefined;
 
 	function handleClick(shape: IShape) {
 		shapeSelected = shape;
+		layerSelected = shape.layers.length > 0 ? shape.layers[0] : undefined;
 	}
 
 	let my_session;
@@ -29,7 +31,12 @@
 					connected: []
 				}
 			],
-			layers: []
+			layers: [
+				{
+					id: 0,
+					leds: ['0']
+				}
+			]
 		};
 
 		if (!my_session) {
@@ -42,6 +49,7 @@
 
 			shapes.push(newShape);
 			shapeSelected = newShape;
+			layerSelected = newShape.layers[0];
 
 			return;
 		}
@@ -61,7 +69,12 @@
 								connected: []
 							}
 						],
-						layers: []
+						layers: [
+							{
+								id: 0,
+								leds: ['0']
+							}
+						]
 					}
 				])
 				.select();
@@ -71,6 +84,7 @@
 			if (data) {
 				shapes.push(data[0]);
 				shapeSelected = data[0];
+				layerSelected = data[0].layers[0];
 			}
 			if (error && status !== 406) throw error;
 		} catch (error) {

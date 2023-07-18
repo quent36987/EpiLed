@@ -1,7 +1,13 @@
 <script lang="ts">
 	import ListBlockSlector from '$lib/components/ListBlockSlector.svelte';
 	import Tabs from './Tabs.svelte';
-	import type { IAnimation, ILed, IShape, IStepAnimation } from '../../interfaces/interfaces';
+	import type {
+		IAnimation,
+		ILayer,
+		ILed,
+		IShape,
+		IStepAnimation
+	} from '../../interfaces/interfaces';
 	import { Triangle } from '$lib/triangles/triangle';
 	import { createLeds, createTriangles, generateTriangles } from '$lib/triangles/utils';
 	import { onMount } from 'svelte';
@@ -20,6 +26,7 @@
 	let animations = ANIMATIONS;
 	let moreTriangles: Triangle[] = [];
 	let shapeSelected: IShape | undefined;
+	let layerSelected: ILayer | undefined;
 
 	let animation: IStepAnimation;
 	let state: EState = EState.EDITING;
@@ -51,37 +58,48 @@
 	$: {
 		refresh;
 		if (refresh) {
+			refresh = false;
 			getShapes().then((data) => {
 				shapes = data as IShape[];
 				if (!shapeSelected) {
 					shapeSelected = shapes[0];
 				}
-				refresh = false;
 			});
 		}
 	}
 
 	onMount(() => {
-		leds = createLeds(triangles);
-
-		update();
 		play();
+		console.log('mounted');
 	});
 
 	const update = () => {
-		if (animationSelected) {
-			animation = animationSelected.function(
+		const allAnimation: IStepAnimation = {
+			frequency: 0,
+			steps: []
+		};
+
+		if (!shapeSelected) return;
+
+		// FIXME x)
+		for (const layer of shapeSelected.layers) {
+			if (!layer.animation) continue;
+
+			leds = createLeds(triangles.filter((triangle) => layer.leds.includes(triangle.triId)));
+
+			const layerAnimation = layer.animation.function(
 				leds,
-				createConfig(animationSelected.modules),
+				createConfig(layer.animation.modules),
 				shapeSelected?.devices ?? []
 			);
-		}
-	};
 
-	const updateModule = () => {
-		if (state === EState.PLAYING) {
-			update();
+			allAnimation.frequency = Math.max(allAnimation.frequency, layerAnimation.frequency);
+
+			allAnimation.steps = allAnimation.steps.concat(layerAnimation.steps);
 		}
+
+		animation = allAnimation;
+		console.log('update');
 	};
 
 	const play = () => {
@@ -98,13 +116,30 @@
 		state = EState.EDITING;
 	};
 
-	const onAnimationClick = (events) => {
-		animationSelected = animations.find((animation) => animation.id === events.detail);
-		update();
-	};
-
 	const onTriangleClick = (events) => {
-		if (state !== EState.EDITING) return;
+		if (state === EState.PAUSED || state === EState.PLAYING) return;
+
+		if (state === EState.LAYERS) {
+			console.log('layer click', events.detail);
+			if (!layerSelected || !shapeSelected) return;
+			console.log('layer click2', layerSelected);
+
+			const LEDS_IS_ALREADY_IN_LAYER = layerSelected.leds.includes(events.detail);
+
+			if (LEDS_IS_ALREADY_IN_LAYER) {
+				layerSelected.leds = layerSelected.leds.filter((id) => id !== events.detail);
+			} else {
+				for (const shapeSelectedElement of shapeSelected.layers) {
+					shapeSelectedElement.leds = shapeSelectedElement.leds.filter(
+						(id) => id !== events.detail
+					);
+				}
+
+				layerSelected.leds.push(events.detail);
+			}
+
+			return;
+		}
 
 		const triangle = triangles.find((triangle) => triangle.triId === events.detail);
 
@@ -121,6 +156,10 @@
 
 			triangles = createTriangles(shapeSelected.devices);
 			moreTriangles = generateTriangles(triangles, editSize);
+
+			shapeSelected.layers.forEach((layer) => {
+				layer.leds = layer.leds.filter((id) => id !== events.detail);
+			});
 		} else {
 			const newTriangle = moreTriangles.find((tri) => tri.triId === events.detail);
 
@@ -151,6 +190,8 @@
 
 				triangles = createTriangles(shapeSelected.devices);
 				moreTriangles = generateTriangles(triangles, editSize);
+
+				layerSelected?.leds.push(newTriangle.triId);
 			}
 		}
 	};
@@ -168,6 +209,9 @@
 	}
 
 	const getShapes = async () => {
+		console.log('get shapes');
+		if (shapes.length > 0) return shapes;
+
 		try {
 			const { data, error, status } = await supabase
 				.from('shapes')
@@ -177,6 +221,18 @@
 
 			console.log('data', data, 'error', error, 'status', status);
 
+			data?.forEach((d) => {
+				d.layers.forEach((l) => {
+					if (l.animation) {
+						const animationFinded = animations.find((a) => a.id === l.animation?.id);
+						if (animationFinded) {
+							l.animation.function = animationFinded.function;
+						}
+					}
+				});
+			});
+
+			console.log('data get supabase', data);
 			return data;
 		} catch (error) {
 			if (error instanceof Error) {
@@ -188,11 +244,12 @@
 	};
 
 	$: {
-		shapeSelected;
 		if (shapeSelected) {
 			triangles = createTriangles(shapeSelected.devices);
 			moreTriangles = generateTriangles(triangles, editSize);
 			leds = createLeds(triangles);
+			if (!layerSelected)
+				layerSelected = shapeSelected.layers.length > 0 ? shapeSelected.layers[0] : undefined;
 			update();
 		}
 	}
@@ -204,6 +261,7 @@
 			on:newDevice={shapeSelected?.newDevice ?? []}
 			bind:shapes
 			bind:shapeSelected
+			bind:layerSelected
 		/>
 	</div>
 	<div class="content">
@@ -214,6 +272,7 @@
 						bind:triangles
 						bind:animation
 						bind:moreTriangles
+						bind:layerSelected
 						on:triangleClick={onTriangleClick}
 						on:deleteTriangle={onTriangleClick}
 						bind:state
@@ -227,13 +286,7 @@
 					<ToggleSize bind:size={editSize} />
 					<SettingButtons bind:shape={shapeSelected} />
 				{/if}
-				<Tabs
-					bind:animations
-					bind:animationSelected
-					bind:shape={shapeSelected}
-					on:animationClick={onAnimationClick}
-					on:updateModule={updateModule}
-				/>
+				<Tabs bind:animations bind:animationSelected bind:layerSelected bind:shapeSelected />
 			</div>
 		</div>
 	</div>

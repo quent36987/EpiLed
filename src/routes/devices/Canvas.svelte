@@ -3,7 +3,7 @@
 	import * as THREE from 'three';
 	import { Triangle } from '$lib/triangles/triangle';
 	import { InteractionManager } from 'three.interactive';
-	import type { IStepAnimation } from '../../interfaces/interfaces';
+	import type { ILayer, IStepAnimation } from '../../interfaces/interfaces';
 	import { EState } from '../../interfaces/enums';
 	import { RotateLeftOutlined, RotateRightOutlined } from 'svelte-ant-design-icons';
 
@@ -11,6 +11,7 @@
 	export let triangles: Triangle[];
 	export let state: EState;
 	export let moreTriangles: Triangle[];
+	export let layerSelected: ILayer;
 
 	let contenaire;
 	let canvas;
@@ -23,6 +24,8 @@
 	let camera: THREE.PerspectiveCamera;
 	let interactionManager: InteractionManager;
 	let renderer: THREE.WebGLRenderer;
+
+	let clicking = false;
 
 	const dispatch = createEventDispatcher();
 
@@ -83,12 +86,29 @@
 		interactionManager = new InteractionManager(renderer, camera, renderer.domElement);
 
 		for (const triangle of triangles) {
+			if (layerSelected && state === EState.LAYERS) {
+				if (layerSelected.leds.includes(triangle.triId)) {
+					triangle.material.color.set('blue');
+				} else {
+					triangle.material.color.set(triangle.color);
+				}
+			}
+
 			scene.add(triangle);
 			interactionManager.add(triangle);
 
 			triangle.addEventListener('click', (target) => {
-				dispatch('deleteTriangle', target.target.triId);
+				console.log('clickTriangle');
 				target.stopPropagation();
+
+				if (!clicking) {
+					clicking = true;
+					dispatch('deleteTriangle', target.target.triId);
+
+					setTimeout(() => {
+						clicking = false;
+					}, 100);
+				}
 			});
 
 			triangle.addEventListener('mouseover', (target) => {
@@ -96,7 +116,12 @@
 			});
 
 			triangle.addEventListener('mouseout', (target) => {
-				target.target.material.color.set(triangle.color);
+				const IN_LAYER =
+					layerSelected &&
+					state === EState.LAYERS &&
+					layerSelected.leds.includes(target.target.triId);
+
+				target.target.material.color.set(IN_LAYER ? 'blue' : triangle.color);
 			});
 		}
 
@@ -129,6 +154,7 @@
 		triangles;
 		moreTriangles;
 		state;
+		layerSelected;
 		update();
 	}
 
@@ -152,8 +178,9 @@
 			return;
 		}
 
-		if (state == EState.EDITING) {
+		if (state == EState.EDITING || state === EState.LAYERS) {
 			requestAnimationFrame(animate);
+
 			if (interactionManager) {
 				interactionManager.update();
 			}
@@ -188,7 +215,7 @@
 
 		setTimeout(() => {
 			requestAnimationFrame(animate);
-		}, animation.frequency * 10);
+		}, animation?.frequency * 10 ?? 100);
 
 		renderer.render(scene, camera);
 	};

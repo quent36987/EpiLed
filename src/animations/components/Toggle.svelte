@@ -25,7 +25,7 @@
 		on:click={() => (state = EState.EDITING)}
 	>
 		<EditOutlined class="w-5 h-5 mr-1" />
-		Edit
+		Shape
 	</button>
 
 	<button

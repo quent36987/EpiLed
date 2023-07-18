@@ -1,30 +1,20 @@
 <script lang="ts">
 	import { Tabs, TabItem } from 'flowbite-svelte';
 	import AlertFilled from 'svelte-ant-design-icons/AlertFilled.svelte';
-	import type { IAnimation, IShape } from '../../interfaces/interfaces';
+	import type { IAnimation, ILayer, IShape } from '../../interfaces/interfaces';
 	import AnimationList from '../../animations/components/AnimationList.svelte';
 	import PropertiesBar from '../../animations/components/PropertiesBar.svelte';
-	import { createEventDispatcher } from 'svelte';
 	import { LayoutOutlined, ProjectOutlined } from 'svelte-ant-design-icons';
 	import Layers from '../../animations/components/Layers.svelte';
 
 	export let animations: IAnimation[];
-	export let animationSelected: IAnimation | undefined;
-	export let shape: IShape;
+	export let shapeSelected: IShape;
+	export let layerSelected: ILayer | undefined;
+	let layers: ILayer[] = [];
 
-	$: layers = shape?.layers ?? [];
+	$: layers = shapeSelected?.layers ?? [];
+	$: animationSelected = layerSelected ? layerSelected.animation : undefined;
 
-	const dispatch = createEventDispatcher();
-
-	const onAnimationClick = (event) => {
-		dispatch('animationClick', event.detail);
-	};
-
-	$: {
-		animationSelected;
-		console.log(animationSelected?.modules);
-		dispatch('updateModule');
-	}
 </script>
 
 <div class="tabs">
@@ -35,7 +25,7 @@
 				Animation
 			</div>
 
-			<AnimationList bind:animations bind:animationSelected on:animationClick={onAnimationClick} />
+			<AnimationList bind:animations bind:animationSelected bind:layerSelected />
 		</TabItem>
 
 		<TabItem>
@@ -53,7 +43,7 @@
 				Layers
 			</div>
 
-			<Layers bind:layers />
+			<Layers bind:layers bind:layerSelected />
 		</TabItem>
 	</Tabs>
 </div>

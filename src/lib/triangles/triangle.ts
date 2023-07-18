@@ -29,7 +29,7 @@ export class Triangle extends THREE.Mesh {
 		p2: Vector2,
 		p3: Vector2,
 		size: number,
-		color = 'green',
+		color = '#a4a0a0',
 		percent = 0.1,
 		scale = 0.95
 	) {

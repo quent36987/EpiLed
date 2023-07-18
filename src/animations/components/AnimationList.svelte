@@ -1,9 +1,9 @@
 <script lang="ts">
-	import type { IAnimation } from '../../interfaces/interfaces';
-	import { createEventDispatcher } from 'svelte';
+	import type { IAnimation, ILayer } from '../../interfaces/interfaces';
 
 	export let animations: IAnimation[];
-	export let animationSelected: IAnimation;
+	export let animationSelected: IAnimation | undefined;
+	export let layerSelected: ILayer | undefined;
 
 	let filter = '';
 
@@ -11,10 +11,28 @@
 		animation.title.toUpperCase().includes(filter.toUpperCase())
 	);
 
-	const dispatch = createEventDispatcher();
-
 	const onAnimationClick = (animation: IAnimation) => {
-		dispatch('animationClick', animation.id);
+		console.log('animation click', layerSelected);
+
+		if (layerSelected) {
+			//create a copie of the animation
+			const copyAnimation: IAnimation = {
+				id: animation.id,
+				title: animation.title,
+				description: animation.description,
+				modules: JSON.parse(JSON.stringify(animation.modules)),
+				function: animation.function
+			};
+
+			// same but simpler
+			// const copyAnimation: IAnimation = {
+			// 	...animation,
+			// 	modules: JSON.parse(JSON.stringify(animation.modules))
+			// };
+
+			layerSelected.animation = copyAnimation;
+			animationSelected = layerSelected.animation;
+		}
 	};
 </script>
 
@@ -23,7 +41,9 @@
 
 	{#each animationsFiltered as animation}
 		<div
-			class="animation {animation === animationSelected ? 'selected' : ''}"
+			class="animation {animationSelected && animation.id === animationSelected.id
+				? 'selected'
+				: ''}"
 			on:click={() => onAnimationClick(animation)}
 		>
 			<h3>{animation.title}</h3>

@@ -6,6 +6,8 @@
 	export let layerSelected: ILayer;
 
 	const addLayer = () => {
+		console.log('shape', layers);
+
 		const newLayer: ILayer = {
 			id: layers.length,
 			leds: []
@@ -13,6 +15,11 @@
 
 		layers.push(newLayer);
 		layerSelected = newLayer;
+	};
+
+	const onLayerSelected = (layer: ILayer) => {
+		layerSelected = layer;
+		console.log('layerSelected', layerSelected);
 	};
 </script>
 
@@ -26,7 +33,7 @@
 		<div
 			class="layer"
 			class:selected={layerSelected === layer}
-			on:click={() => (layerSelected = layer)}
+			on:click={() => onLayerSelected(layer)}
 		>
 			<h3>Layer {i}</h3>
 			<p class="description">{layer.animation ? layer.animation.title : 'None animation yet'}</p>
