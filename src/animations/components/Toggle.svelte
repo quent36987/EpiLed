@@ -7,25 +7,23 @@
 
 <div class="toggle-buttons">
 	<button
-		class="toggle-button {state === EState.PLAYING ? 'active' : ''}"
+		class="toggle-button"
+		class:active={state === EState.PLAYING}
 		on:click={() => (state = EState.PLAYING)}
 	>
-		<PlayCircleOutlined tabindex="-1" class="w-5 h-5 mr-1" />
-		Play
+		<PlayCircleOutlined tabindex="-1" class="w-5 h-5 mr-1" /> Play
 	</button>
 	<button
 		class="toggle-button {state === EState.PAUSED ? 'active' : ''}"
 		on:click={() => (state = EState.PAUSED)}
 	>
-		<PauseCircleOutlined class="w-5 h-5 mr-1" />
-		Pause
+		<PauseCircleOutlined class="w-5 h-5 mr-1" /> Pause
 	</button>
 	<button
 		class="toggle-button {state === EState.EDITING ? 'active' : ''}"
 		on:click={() => (state = EState.EDITING)}
 	>
-		<EditOutlined class="w-5 h-5 mr-1" />
-		Shape
+		<EditOutlined class="w-5 h-5 mr-1" /> Shape
 	</button>
 
 	<button

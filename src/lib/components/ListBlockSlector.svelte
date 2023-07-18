@@ -2,7 +2,8 @@
 	import BlockSlector from '$lib/components/BlockSlector.svelte';
 	import type { ILayer, IShape } from '../../interfaces/interfaces';
 	import { supabase } from '../../supabaseClient';
-	import { addToast, session } from '../../store/store';
+	import { session } from '../../store/store';
+	import { addInfoToast } from '$lib/components/toast/toast';
 
 	export let shapes: IShape[];
 	export let shapeSelected: IShape;
@@ -40,12 +41,7 @@
 		};
 
 		if (!my_session) {
-			addToast({
-				ype: 'info',
-				message: 'Becareful, you need to be logged in to save your device.',
-				timeout: 3000,
-				dismissible: true
-			});
+			addInfoToast('Be careful, you need to be logged in to save your device.');
 
 			shapes.push(newShape);
 			shapeSelected = newShape;

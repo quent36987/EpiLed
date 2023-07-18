@@ -2,45 +2,29 @@
 	import { DeleteOutlined, EditOutlined, SaveOutlined } from 'svelte-ant-design-icons';
 	import type { IShape } from '../../interfaces/interfaces';
 	import { supabase } from '../../supabaseClient';
-	import { addToast, session } from '../../store/store';
+	import { addErrorToast, addSuccessToast } from '$lib/components/toast/toast';
 
 	export let shape: IShape;
 
-	let my_session;
-
-	session.subscribe((value) => {
-		my_session = value;
-	});
-
 	const onSave = async () => {
-		if (!my_session) {
-			addToast({
-				type: 'error',
-				message: 'You must be logged in to save shapes',
-				timeout: 3000,
-				dismissible: true
-			});
-			return;
-		}
+		const { error } = await supabase.from('shapes').upsert(shape);
 
-		await supabase.from('shapes').upsert(shape);
-		addToast({ type: 'success', message: 'Shape saved', timeout: 2000, dismissible: true });
+		if (error) {
+			addErrorToast('Error to save your shape, Verify you are logged in.');
+		} else {
+			addSuccessToast('Shape saved');
+		}
 	};
 
 	const onEdit = async () => {
 		shape.title = prompt('Enter a new name for this shape', shape.title);
-		addToast({ type: 'success', message: 'Shape name updated', timeout: 2000, dismissible: true });
+		addSuccessToast('Shape name updated');
 	};
 
 	const onDelete = async () => {
 		if (confirm('Are you sure you want to delete this?')) {
 			await supabase.from('shapes').delete().match({ id: shape.id }).single();
-			addToast({
-				type: 'success',
-				message: 'Shape deleted',
-				timeout: 2000,
-				dismissible: true
-			});
+			addSuccessToast('Shape deleted');
 		}
 	};
 </script>
@@ -50,10 +34,12 @@
 		<SaveOutlined class="w-5 h-5 mr-1" />
 		Save
 	</button>
+
 	<button class="toggle-button" on:click={onEdit}>
 		<EditOutlined class="w-5 h-5 mr-1" />
 		Name
 	</button>
+
 	<button class="toggle-button" on:click={onDelete}>
 		<DeleteOutlined class="w-5 h-5 mr-1" />
 		Delete
@@ -82,11 +68,6 @@
 		border-radius: 0.5rem;
 		margin: 0 0.5rem;
 		transition: all 0.3s;
-	}
-
-	.toggle-button.active {
-		background-color: var(--bg-color);
-		font-weight: bold;
 	}
 
 	.toggle-button:hover {

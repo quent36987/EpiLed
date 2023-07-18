@@ -12,25 +12,12 @@
 	);
 
 	const onAnimationClick = (animation: IAnimation) => {
-		console.log('animation click', layerSelected);
-
 		if (layerSelected) {
-			//create a copie of the animation
-			const copyAnimation: IAnimation = {
-				id: animation.id,
-				title: animation.title,
-				description: animation.description,
-				modules: JSON.parse(JSON.stringify(animation.modules)),
-				function: animation.function
+			layerSelected.animation = {
+				...animation,
+				modules: JSON.parse(JSON.stringify(animation.modules))
 			};
 
-			// same but simpler
-			// const copyAnimation: IAnimation = {
-			// 	...animation,
-			// 	modules: JSON.parse(JSON.stringify(animation.modules))
-			// };
-
-			layerSelected.animation = copyAnimation;
 			animationSelected = layerSelected.animation;
 		}
 	};
@@ -41,9 +28,8 @@
 
 	{#each animationsFiltered as animation}
 		<div
-			class="animation {animationSelected && animation.id === animationSelected.id
-				? 'selected'
-				: ''}"
+			class="animation"
+			class:selected={animationSelected && animation.id === animationSelected.id}
 			on:click={() => onAnimationClick(animation)}
 		>
 			<h3>{animation.title}</h3>

@@ -6,8 +6,6 @@
 	export let layerSelected: ILayer;
 
 	const addLayer = () => {
-		console.log('shape', layers);
-
 		const newLayer: ILayer = {
 			id: layers.length,
 			leds: []
@@ -19,14 +17,13 @@
 
 	const onLayerSelected = (layer: ILayer) => {
 		layerSelected = layer;
-		console.log('layerSelected', layerSelected);
 	};
 </script>
 
 <div>
 	<div class="button flex-row center" on:click={addLayer}>
 		<AppstoreAddOutlined />
-		Ajouter
+		Add a new layer
 	</div>
 
 	{#each layers as layer, i}
@@ -75,8 +72,8 @@
 		padding: var(--spacing-s) var(--spacing-l);
 		margin-bottom: var(--spacing-s);
 		margin-top: var(--spacing-s);
-		width: min-content;
 		gap: var(--spacing-s);
+		width: max-content;
 	}
 
 	.button:hover,

@@ -14,6 +14,8 @@ export function createSnakeAnimation(
 	props: ISnakeProps,
 	devices: IDevice[] = []
 ): IStepAnimation {
+	const allledIds = leds.map((led) => led.id);
+
 	const animation: IStepAnimation = {
 		frequency: props.frequency,
 		steps: []
@@ -39,8 +41,9 @@ export function createSnakeAnimation(
 		let time = 0;
 
 		for (let c = props.colorCount; c >= 0; c--) {
+
 			animation.steps.push({
-				ids: tmpLed,
+				ids: tmpLed.filter((led) => allledIds.includes(led)),
 				timecode: time,
 				colors: colors[(c + part * props.colorCountBetweenStep) % props.colorCount]
 			});
