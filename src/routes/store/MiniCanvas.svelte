@@ -2,6 +2,7 @@
 	import { Triangle } from '$lib/triangles/triangle';
 	import { onMount } from 'svelte';
 	import * as THREE from 'three';
+	import { _resizeCamera } from '../devices/utils';
 
 	export let triangles: Triangle[];
 	let contenaire;
@@ -26,23 +27,7 @@
 	});
 
 	const resizeCamera = () => {
-		let maxX = Math.max(...triangles.map((x) => Math.max(x.vec1.x, x.vec2.x, x.vec3.x)));
-		let minX = Math.min(...triangles.map((x) => Math.min(x.vec1.x, x.vec2.x, x.vec3.x)));
-		let maxY = Math.max(...triangles.map((x) => Math.max(x.vec1.y, x.vec2.y, x.vec3.y)));
-		let minY = Math.min(...triangles.map((x) => Math.min(x.vec1.y, x.vec2.y, x.vec3.y)));
-
-		const rotatedMaxX = maxX * Math.cos(sceneRotation) - maxY * Math.sin(sceneRotation);
-		const rotatedMinX = minX * Math.cos(sceneRotation) - minY * Math.sin(sceneRotation);
-		const rotatedMaxY = maxX * Math.sin(sceneRotation) + maxY * Math.cos(sceneRotation);
-		const rotatedMinY = minX * Math.sin(sceneRotation) + minY * Math.cos(sceneRotation);
-
-		camera.position.x = (rotatedMaxX + rotatedMinX) / 2;
-		camera.position.y = (rotatedMaxY + rotatedMinY) / 2;
-
-		camera.position.z = Math.max(
-			Math.max(Math.abs(minX), Math.abs(maxY)),
-			Math.max(Math.abs(maxX), Math.abs(minY))
-		);
+		_resizeCamera(camera, 0, sceneRotation, triangles, []);
 	};
 
 	const update = () => {

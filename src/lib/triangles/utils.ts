@@ -158,9 +158,7 @@ export function createLeds(triangles: Triangle[]) {
 		leds.push({
 			id: tri.triId,
 			shape: 'e',
-			position: [middle.x, middle.y],
-			rotation: 0,
-			pin: [1]
+			position: [middle.x, middle.y]
 		});
 	}
 

@@ -39,8 +39,6 @@ export interface ILed {
 	id: string;
 	shape: string;
 	position: [number, number];
-	rotation: number;
-	pin: number[];
 }
 
 export interface IStepAnimation {

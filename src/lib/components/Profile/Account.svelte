@@ -1,11 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import type { AuthSession } from "@supabase/supabase-js";
-    import {supabase} from "../../supabaseClient";
-    import Avatar from "$lib/components/Avatar.svelte";
-
-
-
+    import {supabase} from "../../../supabaseClient";
+    import Avatar from "$lib/components/Profile/Avatar.svelte";
     export let session: AuthSession;
 
     let loading = false

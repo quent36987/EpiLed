@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { Range, Label } from 'flowbite-svelte';
-	import type { IModule } from '../../interfaces/interfaces';
+	import type { IModule } from '../../../../interfaces/interfaces';
 
 	export let module: IModule;
 </script>

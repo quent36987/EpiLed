@@ -5,22 +5,12 @@
 </script>
 
 <div class="toggle-buttons">
-	<button class="toggle-button {size === 1 ? 'active' : ''}" on:click={() => (size = 1)}>
-		<BorderOutlined class="w-4 h-4 mr-1" />
-		1
-	</button>
-	<button class="toggle-button {size === 2 ? 'active' : ''}" on:click={() => (size = 2)}>
-		<BorderOutlined class="w-5 h-5 mr-1" />
-		2
-	</button>
-	<button class="toggle-button {size === 3 ? 'active' : ''}" on:click={() => (size = 3)}>
-		<BorderOutlined class="w-6 h-6 mr-1" />
-		3
-	</button>
-	<button class="toggle-button {size === 4 ? 'active' : ''}" on:click={() => (size = 4)}>
-		<BorderOutlined class="w-7 h-7 mr-1" />
-		4
-	</button>
+	{#each [1, 2, 3, 4] as num}
+		<button class:active={size === num} on:click={() => (size = num)}>
+			<BorderOutlined class={`w-${num + 3} h-${num + 3} mr-1`} />
+			{num}
+		</button>
+	{/each}
 </div>
 
 <style>
@@ -34,7 +24,7 @@
 		width: min-content;
 	}
 
-	.toggle-button {
+	.toggle-buttons > button {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -47,12 +37,12 @@
 		transition: all 0.3s;
 	}
 
-	.toggle-button.active {
+	.toggle-buttons > button.active {
 		background-color: var(--bg-color);
 		font-weight: bold;
 	}
 
-	.toggle-button:hover {
+	.toggle-buttons > button:hover {
 		transform: scale(1.1);
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}

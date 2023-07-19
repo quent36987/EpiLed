@@ -3,16 +3,14 @@
 	import ShapesStore from './ShapesStore.svelte';
 	import { sharingShapes } from '../../data/mockdata';
 	import { ArrowKeyLeft, ArrowKeyRight } from 'flowbite-svelte';
-	import {SearchOutlined} from "svelte-ant-design-icons";
+	import { SearchOutlined } from 'svelte-ant-design-icons';
 
 	let shapesStored: ISharingShape[] = sharingShapes;
 </script>
 
 <div class="store">
 	<div class="header">
-
-
-			<input type="text" placeholder="Search shapes" class="search" />
+		<input type="text" placeholder="Search shapes" class="search" />
 
 		<div class="button flex-row center">
 			<SearchOutlined />

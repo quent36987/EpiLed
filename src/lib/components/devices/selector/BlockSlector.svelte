@@ -1,16 +1,20 @@
 <script lang="ts">
-	import Icon from '../images/test2.png';
-	import type { IShape } from '../../interfaces/interfaces';
+	import Icon from '../../../images/test2.png';
+	import type { ILayer, IShape } from '../../../../interfaces/interfaces';
 
 	export let shape: IShape;
-	export let shapeSelected: IShape;
+	export let shapeSelected: IShape | undefined;
+	export let layerSelected: ILayer | undefined;
+
+	function handleClick() {
+		shapeSelected = shape;
+		layerSelected = shape.layers.length > 0 ? shape.layers[0] : undefined;
+	}
 </script>
 
-<div class="block {shapeSelected === shape ? 'isSelected' : ''}" on:click>
-	<div>
-		<!-- FIXMe by something else -->
-		<img src={Icon} alt="icon" />
-	</div>
+<div class="block" class:isSelected={shapeSelected === shape} on:click={handleClick}>
+	<img src={Icon} alt="icon" />
+
 	<div class="title">
 		{shape.title}
 	</div>

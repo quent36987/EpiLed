@@ -14,12 +14,10 @@
 
 		const state = target.getAttribute('aria-checked');
 
-		checked = state === 'true' ? false : true;
+		checked = state !== 'true';
 
 		value = checked;
 	}
-
-	const slugify = (str = '') => str.toLowerCase().replace(/ /g, '-').replace(/\./g, '');
 </script>
 
 {#if design == 'inner'}

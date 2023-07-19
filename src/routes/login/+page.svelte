@@ -1,6 +1,6 @@
 <script lang="ts">
-	import Auth from '$lib/components/Auth.svelte';
-	import Account from '$lib/components/Account.svelte';
+	import Auth from '$lib/components/Profile/Auth.svelte';
+	import Account from '$lib/components/Profile/Account.svelte';
 	import { session } from '../../store/store';
 
 	let my_session;

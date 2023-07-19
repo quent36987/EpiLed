@@ -1,16 +1,12 @@
 <script lang="ts">
-	import type { IModule } from '../../interfaces/interfaces';
+	import type { IModule } from '../../../../interfaces/interfaces';
+	import Switch from '$lib/components/common/Switch.svelte';
 
 	export let module: IModule;
 </script>
 
 <div class="range-container">
-	<input type="color" bind:value={module.color.value} />
-	
-	<div class="italic">
-		{module.title}
-		{module.color.value}
-	</div>
+	<Switch bind:value={module.toggle.value} design="slider" label={module.title} />
 </div>
 
 <style>

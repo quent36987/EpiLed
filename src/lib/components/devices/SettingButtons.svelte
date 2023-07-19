@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { DeleteOutlined, EditOutlined, SaveOutlined } from 'svelte-ant-design-icons';
-	import type { IShape } from '../../interfaces/interfaces';
-	import { supabase } from '../../supabaseClient';
+	import type { IShape } from '../../../interfaces/interfaces';
+	import { supabase } from '../../../supabaseClient';
 	import { addErrorToast, addSuccessToast } from '$lib/components/toast/toast';
 
 	export let shape: IShape;

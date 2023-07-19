@@ -6,6 +6,7 @@
 	import type { ILayer, IStepAnimation } from '../../interfaces/interfaces';
 	import { EState } from '../../interfaces/enums';
 	import { RotateLeftOutlined, RotateRightOutlined } from 'svelte-ant-design-icons';
+	import { _resizeCamera } from './utils';
 
 	export let animation: IStepAnimation;
 	export let triangles: Triangle[];
@@ -15,6 +16,7 @@
 
 	let contenaire;
 	let canvas;
+
 	let sceneRotation = 0;
 	let timecode = 0;
 	let maxTimecode = 0;
@@ -43,36 +45,13 @@
 	});
 
 	const resizeCamera = () => {
-		let maxX = Math.max(...triangles.map((x) => Math.max(x.vec1.x, x.vec2.x, x.vec3.x)));
-		let minX = Math.min(...triangles.map((x) => Math.min(x.vec1.x, x.vec2.x, x.vec3.x)));
-		let maxY = Math.max(...triangles.map((x) => Math.max(x.vec1.y, x.vec2.y, x.vec3.y)));
-		let minY = Math.min(...triangles.map((x) => Math.min(x.vec1.y, x.vec2.y, x.vec3.y)));
-
-		if (state == EState.EDITING) {
-			const maxX2 = Math.max(...moreTriangles.map((x) => Math.max(x.vec1.x, x.vec2.x, x.vec3.x)));
-			const minX2 = Math.min(...moreTriangles.map((x) => Math.min(x.vec1.x, x.vec2.x, x.vec3.x)));
-			const maxY2 = Math.max(...moreTriangles.map((x) => Math.max(x.vec1.y, x.vec2.y, x.vec3.y)));
-			const minY2 = Math.min(...moreTriangles.map((x) => Math.min(x.vec1.y, x.vec2.y, x.vec3.y)));
-
-			maxX = Math.max(maxX, maxX2);
-			minX = Math.min(minX, minX2);
-			maxY = Math.max(maxY, maxY2);
-			minY = Math.min(minY, minY2);
-		}
-
-		const rotatedMaxX = maxX * Math.cos(sceneRotation) - maxY * Math.sin(sceneRotation);
-		const rotatedMinX = minX * Math.cos(sceneRotation) - minY * Math.sin(sceneRotation);
-		const rotatedMaxY = maxX * Math.sin(sceneRotation) + maxY * Math.cos(sceneRotation);
-		const rotatedMinY = minX * Math.sin(sceneRotation) + minY * Math.cos(sceneRotation);
-
-		camera.position.x = (rotatedMaxX + rotatedMinX) / 2;
-		camera.position.y = (rotatedMaxY + rotatedMinY) / 2;
-
-		let maxDistance = Math.max(
-			Math.max(Math.abs(minX), Math.abs(maxY)),
-			Math.max(Math.abs(maxX), Math.abs(minY))
+		_resizeCamera(
+			camera,
+			zoom,
+			sceneRotation,
+			triangles,
+			state == EState.EDITING ? moreTriangles : []
 		);
-		camera.position.z = Math.max(maxDistance + zoom, 1);
 	};
 
 	const update = () => {
@@ -98,12 +77,11 @@
 			interactionManager.add(triangle);
 
 			triangle.addEventListener('click', (target) => {
-				console.log('clickTriangle');
 				target.stopPropagation();
 
 				if (!clicking) {
 					clicking = true;
-					dispatch('deleteTriangle', target.target.triId);
+					dispatch('triangleClick', target.target.triId);
 
 					setTimeout(() => {
 						clicking = false;
@@ -147,6 +125,7 @@
 			}
 		}
 
+		timecode = 0;
 		resizeCamera();
 	};
 
@@ -159,7 +138,6 @@
 	}
 
 	$: {
-		animation;
 		if (animation && animation.steps.length > 0) {
 			maxTimecode = animation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b));
 		}
@@ -241,6 +219,7 @@
 		<div class="zoom" on:click={() => rotate(-5)}>
 			<RotateRightOutlined />
 		</div>
+
 		<div class="zoom" on:click={() => rotate(5)}>
 			<RotateLeftOutlined />
 		</div>

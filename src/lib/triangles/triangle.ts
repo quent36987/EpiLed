@@ -126,43 +126,6 @@ export class Triangle extends THREE.Mesh {
 		return false;
 	}
 
-	isConnected(triangle: Triangle, threshold = 0.01) {
-		if (
-			(this.vec1.distanceTo(triangle.vec1) < threshold ||
-				this.vec1.distanceTo(triangle.vec2) < threshold ||
-				this.vec1.distanceTo(triangle.vec3) < threshold) &&
-			(this.vec2.distanceTo(triangle.vec1) < threshold ||
-				this.vec2.distanceTo(triangle.vec2) < threshold ||
-				this.vec2.distanceTo(triangle.vec3) < threshold)
-		) {
-			return 1;
-		}
-
-		if (
-			(this.vec2.distanceTo(triangle.vec1) < threshold ||
-				this.vec2.distanceTo(triangle.vec2) < threshold ||
-				this.vec2.distanceTo(triangle.vec3) < threshold) &&
-			(this.vec3.distanceTo(triangle.vec1) < threshold ||
-				this.vec3.distanceTo(triangle.vec2) < threshold ||
-				this.vec3.distanceTo(triangle.vec3) < threshold)
-		) {
-			return 2;
-		}
-
-		if (
-			(this.vec3.distanceTo(triangle.vec1) < threshold ||
-				this.vec3.distanceTo(triangle.vec2) < threshold ||
-				this.vec3.distanceTo(triangle.vec3) < threshold) &&
-			(this.vec1.distanceTo(triangle.vec1) < threshold ||
-				this.vec1.distanceTo(triangle.vec2) < threshold ||
-				this.vec1.distanceTo(triangle.vec3) < threshold)
-		) {
-			return 3;
-		}
-
-		return -1;
-	}
-
 	getPin(pin: number) {
 		let segment, vecA, vecB, vecC;
 

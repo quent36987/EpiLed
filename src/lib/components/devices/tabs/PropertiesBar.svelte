@@ -1,13 +1,13 @@
 <script lang="ts">
 	import RangeBar from './RangeBar.svelte';
 	import ColorBar from './ColorBar.svelte';
-	import type { IAnimation } from '../../interfaces/interfaces';
+	import type { IAnimation } from '../../../../interfaces/interfaces';
 	import ToggleBar from './ToggleBar.svelte';
 
-	export let animation: IAnimation | undefined;
+	export let animationSelected: IAnimation | undefined;
 </script>
 
-{#each animation?.modules ?? [] as module}
+{#each animationSelected?.modules ?? [] as module}
 	<div>
 		{#if module.range}
 			<RangeBar bind:module />

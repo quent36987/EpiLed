@@ -9,7 +9,6 @@ export function updateAnnimation(oldAnnimation: IStepAnimation, newAnnimation: I
 		if (oldStepIds.length > 0) {
 			const newStep: IStep = {
 				ids: oldStepIds,
-				leds: oldStep.leds,
 				timecode: oldStep.timecode,
 				colors: oldStep.colors,
 				intensities: oldStep.intensities

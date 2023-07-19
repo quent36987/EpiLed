@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { IAnimation, ILayer } from '../../interfaces/interfaces';
+	import type { IAnimation, ILayer } from '../../../../interfaces/interfaces';
 
 	export let animations: IAnimation[];
 	export let animationSelected: IAnimation | undefined;

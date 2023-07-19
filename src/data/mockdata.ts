@@ -7,7 +7,7 @@ export const generateDevices = (triangleCount: number): IDevice[] => {
 		const device: IDevice = {
 			id: i.toString(),
 			connected: [],
-			size: 3,
+			size: 3
 		};
 
 		const prevId = i === 1 ? triangleCount : i - 1;
@@ -20,7 +20,7 @@ export const generateDevices = (triangleCount: number): IDevice[] => {
 	}
 
 	return devices;
-}
+};
 
 export const deviceslol: IDevice[] = [
 	{
@@ -63,7 +63,8 @@ const shape: IShape = {
 	title: 'title',
 	id: 0,
 	devices: deviceslol,
-	owner_id: 5828
+	owner_id: 5828,
+	layers: []
 };
 
 export const sharingShapes: ISharingShape[] = [

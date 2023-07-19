@@ -1,37 +1,25 @@
 <script lang="ts">
 	import { EditOutlined, PauseCircleOutlined, PlayCircleOutlined } from 'svelte-ant-design-icons';
-	import { EState } from '../../interfaces/enums.js';
+	import { EState } from '../../../interfaces/enums.js';
 
 	export let state: EState;
 </script>
 
 <div class="toggle-buttons">
-	<button
-		class="toggle-button"
-		class:active={state === EState.PLAYING}
-		on:click={() => (state = EState.PLAYING)}
-	>
+	<button class:active={state === EState.PLAYING} on:click={() => (state = EState.PLAYING)}>
 		<PlayCircleOutlined tabindex="-1" class="w-5 h-5 mr-1" /> Play
 	</button>
-	<button
-		class="toggle-button {state === EState.PAUSED ? 'active' : ''}"
-		on:click={() => (state = EState.PAUSED)}
-	>
+
+	<button class:active={state === EState.PAUSED} on:click={() => (state = EState.PAUSED)}>
 		<PauseCircleOutlined class="w-5 h-5 mr-1" /> Pause
 	</button>
-	<button
-		class="toggle-button {state === EState.EDITING ? 'active' : ''}"
-		on:click={() => (state = EState.EDITING)}
-	>
+
+	<button class:active={state === EState.EDITING} on:click={() => (state = EState.EDITING)}>
 		<EditOutlined class="w-5 h-5 mr-1" /> Shape
 	</button>
 
-	<button
-		class="toggle-button {state === EState.LAYERS ? 'active' : ''}"
-		on:click={() => (state = EState.LAYERS)}
-	>
-		<EditOutlined class="w-5 h-5 mr-1" />
-		Layers
+	<button class:active={state === EState.LAYERS} on:click={() => (state = EState.LAYERS)}>
+		<EditOutlined class="w-5 h-5 mr-1" /> Layers
 	</button>
 </div>
 
@@ -46,7 +34,7 @@
 		width: min-content;
 	}
 
-	.toggle-button {
+	.toggle-buttons > button {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -59,12 +47,12 @@
 		transition: all 0.3s;
 	}
 
-	.toggle-button.active {
+	.toggle-buttons > button.active {
 		background-color: var(--bg-color);
 		font-weight: bold;
 	}
 
-	.toggle-button:hover {
+	.toggle-buttons > button:hover {
 		transform: scale(1.1);
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}

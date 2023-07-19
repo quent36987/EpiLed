@@ -1,18 +1,13 @@
 <script lang="ts" xmlns="http://www.w3.org/1999/html">
-	import BlockSlector from '$lib/components/BlockSlector.svelte';
-	import type { ILayer, IShape } from '../../interfaces/interfaces';
-	import { supabase } from '../../supabaseClient';
-	import { session } from '../../store/store';
-	import { addInfoToast } from '$lib/components/toast/toast';
+	import BlockSlector from '$lib/components/devices/selector/BlockSlector.svelte';
+	import type { ILayer, IShape } from '../../../../interfaces/interfaces';
+	import { supabase } from '../../../../supabaseClient';
+	import { session } from '../../../../store/store';
+	import { addErrorToast, addInfoToast } from '$lib/components/toast/toast';
 
 	export let shapes: IShape[];
-	export let shapeSelected: IShape;
+	export let shapeSelected: IShape | undefined;
 	export let layerSelected: ILayer | undefined;
-
-	function handleClick(shape: IShape) {
-		shapeSelected = shape;
-		layerSelected = shape.layers.length > 0 ? shape.layers[0] : undefined;
-	}
 
 	let my_session;
 
@@ -21,8 +16,7 @@
 	});
 
 	const onNewDeviceClick = async () => {
-		const newShape: IShape = {
-			id: 0,
+		const newShape = {
 			owner_id: 0,
 			title: 'New device',
 			devices: [
@@ -40,12 +34,14 @@
 			]
 		};
 
-		if (!my_session) {
+		if (!my_session || !my_session.user) {
 			addInfoToast('Be careful, you need to be logged in to save your device.');
 
-			shapes.push(newShape);
-			shapeSelected = newShape;
-			layerSelected = newShape.layers[0];
+			const shape: IShape = { ...newShape, id: 1 };
+
+			shapes.push(shape);
+			shapeSelected = shape;
+			layerSelected = shape.layers[0];
 
 			return;
 		}
@@ -54,28 +50,8 @@
 		try {
 			const { data, error, status } = await supabase
 				.from('shapes')
-				.insert([
-					{
-						title: title,
-						owner_id: my_session.user.id,
-						devices: [
-							{
-								id: '0',
-								size: 1,
-								connected: []
-							}
-						],
-						layers: [
-							{
-								id: 0,
-								leds: ['0']
-							}
-						]
-					}
-				])
+				.insert([{ ...newShape, title: title, owner_id: my_session.user.id }])
 				.select();
-
-			console.log('data', data, 'error', error, 'status', status);
 
 			if (data) {
 				shapes.push(data[0]);
@@ -84,8 +60,9 @@
 			}
 			if (error && status !== 406) throw error;
 		} catch (error) {
-			if (error instanceof Error) {
-				console.log(error.message);
+			if (error) {
+				console.log(error);
+				addErrorToast('Error while creating new device');
 			}
 		}
 	};
@@ -93,12 +70,13 @@
 
 <div class="blocks">
 	{#each shapes as shape}
-		<BlockSlector on:click={() => handleClick(shape)} bind:shape bind:shapeSelected />
+		<BlockSlector bind:layerSelected bind:shape bind:shapeSelected />
 	{/each}
+
 	<div class="new-device" on:click={onNewDeviceClick}>
 		<div class="title">
 			<div class="plus">+</div>
-			new device
+			 new device
 		</div>
 	</div>
 </div>

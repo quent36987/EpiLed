@@ -1,20 +1,18 @@
 <script lang="ts">
 	import { Tabs, TabItem } from 'flowbite-svelte';
 	import AlertFilled from 'svelte-ant-design-icons/AlertFilled.svelte';
-	import type { IAnimation, ILayer, IShape } from '../../interfaces/interfaces';
-	import AnimationList from '../../animations/components/AnimationList.svelte';
-	import PropertiesBar from '../../animations/components/PropertiesBar.svelte';
+	import type { IAnimation, ILayer, IShape } from '../../../../interfaces/interfaces';
+	import AnimationList from '$lib/components/devices/tabs/AnimationList.svelte';
+	import PropertiesBar from '$lib/components/devices/tabs/PropertiesBar.svelte';
 	import { LayoutOutlined, ProjectOutlined } from 'svelte-ant-design-icons';
-	import Layers from '../../animations/components/Layers.svelte';
+	import Layers from '$lib/components/devices/tabs/Layers.svelte';
 
 	export let animations: IAnimation[];
 	export let shapeSelected: IShape;
 	export let layerSelected: ILayer | undefined;
-	let layers: ILayer[] = [];
 
 	$: layers = shapeSelected?.layers ?? [];
 	$: animationSelected = layerSelected ? layerSelected.animation : undefined;
-
 </script>
 
 <div class="tabs">
@@ -34,7 +32,7 @@
 				Properties
 			</div>
 
-			<PropertiesBar bind:animation={animationSelected} />
+			<PropertiesBar bind:animationSelected />
 		</TabItem>
 
 		<TabItem>
@@ -52,9 +50,7 @@
 	.tabs {
 		margin-top: var(--spacing-s);
 		background-color: var(--light-gray);
-
 		padding: var(--spacing-s);
-
 		border-radius: 20px;
 		height: min-content;
 	}

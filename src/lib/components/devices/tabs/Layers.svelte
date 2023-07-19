@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { ILayer } from '../../interfaces/interfaces';
+	import type { ILayer } from '../../../../interfaces/interfaces';
 	import { AppstoreAddOutlined } from 'svelte-ant-design-icons';
 
 	export let layers: ILayer[];
