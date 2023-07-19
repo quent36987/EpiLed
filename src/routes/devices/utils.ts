@@ -39,3 +39,5 @@ export const _resizeCamera = (
 
 	camera.position.z = Math.max(maxDistance + zoom, 1);
 };
+
+

@@ -8,7 +8,7 @@
 	import { RotateLeftOutlined, RotateRightOutlined } from 'svelte-ant-design-icons';
 	import { _resizeCamera } from './utils';
 
-	export let animation: IStepAnimation;
+	export let animationsStep: IStepAnimation[];
 	export let triangles: Triangle[];
 	export let state: EState;
 	export let moreTriangles: Triangle[];
@@ -18,8 +18,8 @@
 	let canvas;
 
 	let sceneRotation = 0;
-	let timecode = 0;
-	let maxTimecode = 0;
+	let timecode = [];
+	let maxTimecode = [];
 	let zoom = 0;
 
 	let scene: THREE.Scene;
@@ -125,7 +125,6 @@
 			}
 		}
 
-		timecode = 0;
 		resizeCamera();
 	};
 
@@ -138,8 +137,15 @@
 	}
 
 	$: {
-		if (animation && animation.steps.length > 0) {
-			maxTimecode = animation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b));
+		// if (animation && animation.steps.length > 0) {
+		// 	maxTimecode = animation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b));
+		// }
+		animationsStep;
+		for (const iStepAnimation of animationsStep) {
+			timecode.push(0);
+			maxTimecode.push(
+				iStepAnimation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b))
+			);
 		}
 	}
 
@@ -167,33 +173,35 @@
 			return;
 		}
 
-		if (timecode > maxTimecode) {
-			timecode = 0;
-		}
+		for (let i = 0; i < animationsStep.length; i++) {
+			if (timecode[i] > maxTimecode[i]) {
+				timecode[i] = 0;
+			}
 
-		if (triangles && triangles.length > 0 && triangles[0].material && animation != null) {
-			const step = animation.steps.filter((x) => x.timecode === timecode);
+			if (triangles && triangles.length > 0 && triangles[0].material && animationsStep[i] != null) {
+				const step = animationsStep[i].steps.filter((x) => x.timecode === timecode[i]);
 
-			for (const s of step) {
-				const ids = s.ids;
+				for (const s of step) {
+					const ids = s.ids;
 
-				for (const id of ids) {
-					const tri = triangles.filter((x) => x.triId === id)[0];
+					for (const id of ids) {
+						const tri = triangles.filter((x) => x.triId === id)[0];
 
-					if (tri) {
-						tri.material = new THREE.MeshBasicMaterial({
-							color: s.colors
-						});
+						if (tri) {
+							tri.material = new THREE.MeshBasicMaterial({
+								color: s.colors
+							});
+						}
 					}
 				}
 			}
-		}
 
-		timecode += 1;
+			timecode[i] += 1;
+		}
 
 		setTimeout(() => {
 			requestAnimationFrame(animate);
-		}, animation?.frequency * 10 ?? 100);
+		}, (1 / (animationsStep[0]?.frequency ?? 1000)) * 1000);
 
 		renderer.render(scene, camera);
 	};

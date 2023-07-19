@@ -13,6 +13,7 @@
 	import SettingButtons from '$lib/components/devices/SettingButtons.svelte';
 	import { session } from '../../store/store';
 	import { ANIMATIONS } from '../../data/data';
+	import { UniformAnimationsDuration } from '../../animations/utils/decoupe';
 
 	let shapes: IShape[] = [];
 	let triangles: Triangle[] = [];
@@ -21,7 +22,7 @@
 	let shapeSelected: IShape | undefined;
 	let layerSelected: ILayer | undefined;
 
-	let animation: IStepAnimation;
+	let animationsStep: IStepAnimation[] = [];
 	let state: EState = EState.EDITING;
 	let editSize = 3;
 	let animationSelected: IAnimation | undefined = animations[0];
@@ -66,10 +67,7 @@
 	});
 
 	const update = () => {
-		const allAnimation: IStepAnimation = {
-			frequency: 0,
-			steps: []
-		};
+		const allAnimation: IStepAnimation[] = [];
 
 		if (!shapeSelected) return;
 
@@ -77,20 +75,16 @@
 		for (const layer of shapeSelected.layers) {
 			if (!layer.animation) continue;
 
-			const leds = createLeds(triangles.filter((triangle) => layer.leds.includes(triangle.triId)));
-
 			const layerAnimation = layer.animation.function(
-				leds,
+				createLeds(triangles.filter((triangle) => layer.leds.includes(triangle.triId))),
 				createConfig(layer.animation.modules),
 				shapeSelected?.devices ?? []
 			);
 
-			allAnimation.frequency = Math.max(allAnimation.frequency, layerAnimation.frequency);
-
-			allAnimation.steps = allAnimation.steps.concat(layerAnimation.steps);
+			allAnimation.push(layerAnimation);
 		}
 
-		animation = allAnimation;
+		animationsStep = UniformAnimationsDuration(allAnimation);
 	};
 
 	const play = () => {
@@ -250,7 +244,7 @@
 			<div id="middle" class="flex-col">
 				<Canvas
 					bind:triangles
-					bind:animation
+					bind:animationsStep
 					bind:moreTriangles
 					bind:layerSelected
 					on:triangleClick={onTriangleClick}

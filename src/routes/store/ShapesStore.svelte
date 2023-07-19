@@ -8,7 +8,6 @@
 
 	export let shape: ISharingShape;
 
-	//$: triangles = createTriangles(shape.shape.devices);
 	let triangles = createTriangles(generateDevices(Math.floor(Math.random() * 6) + 1));
 </script>
 
