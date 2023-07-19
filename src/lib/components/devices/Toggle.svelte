@@ -29,7 +29,6 @@
 		justify-content: center;
 		background-color: var(--light-gray);
 		border-radius: 15px;
-		margin-top: var(--spacing-s);
 		padding: var(--spacing-s);
 		width: min-content;
 	}

@@ -125,6 +125,16 @@
 			}
 		}
 
+		timecode = [];
+		maxTimecode = [];
+		for (const iStepAnimation of animationsStep) {
+			timecode.push(0);
+			maxTimecode.push(
+				iStepAnimation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b))
+			);
+		}
+		console.log('upafte');
+
 		resizeCamera();
 	};
 
@@ -141,12 +151,16 @@
 		// 	maxTimecode = animation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b));
 		// }
 		animationsStep;
+		/*timecode = [];
+		maxTimecode = [];
 		for (const iStepAnimation of animationsStep) {
 			timecode.push(0);
 			maxTimecode.push(
 				iStepAnimation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b))
 			);
-		}
+		}*/
+
+		console.log('ici', animationsStep);
 	}
 
 	const editZoom = (value) => {
@@ -240,6 +254,8 @@
 <style>
 	#container {
 		position: relative;
+		height: 100%;
+		flex: 5;
 	}
 
 	.test {

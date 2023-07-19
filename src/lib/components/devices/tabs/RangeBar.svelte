@@ -3,6 +3,12 @@
 	import type { IModule } from '../../../../interfaces/interfaces';
 
 	export let module: IModule;
+
+	let debouncedValue = module.range.value;
+
+	const change = () => {
+		module.range.value = debouncedValue;
+	};
 </script>
 
 <div class="range-container">
@@ -17,7 +23,8 @@
 			id="range-minmax"
 			min={module.range.min}
 			max={module.range.max}
-			bind:value={module.range.value}
+			bind:value={debouncedValue}
+			on:change={change}
 		/>
 
 		<div class="slider_number">
@@ -25,7 +32,7 @@
 		</div>
 	</div>
 
-	<p class="value">Value: {module.range.value}</p>
+	<p class="value">Value: {debouncedValue}</p>
 </div>
 
 <style>
@@ -40,7 +47,7 @@
 		font-size: 0.8rem;
 	}
 
-	.value{
+	.value {
 		font-size: 0.7rem;
 	}
 </style>

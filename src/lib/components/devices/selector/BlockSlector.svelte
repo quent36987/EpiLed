@@ -25,6 +25,7 @@
 		padding: var(--spacing-s);
 		border-radius: var(--spacing-s);
 		cursor: default;
+
 	}
 
 	.block:hover {

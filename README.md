@@ -1,6 +1,8 @@
 # EPI-LED
 
 it's a simple web app to control a led strip.
+You can create some templates and add animations to it.
+You can also save your templates and animations online.
 
 ![screenshot](./src/lib/images/logiciel/image1.png)
 ![screenshot](./src/lib/images/logiciel/image2.png)

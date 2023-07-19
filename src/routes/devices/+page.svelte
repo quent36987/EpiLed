@@ -71,7 +71,6 @@
 
 		if (!shapeSelected) return;
 
-		// FIXME x)
 		for (const layer of shapeSelected.layers) {
 			if (!layer.animation) continue;
 
@@ -236,30 +235,26 @@
 </svelte:head>
 
 <div id="app">
-	<div id="left">
+	<div class="left">
 		<ListBlockSlector bind:shapes bind:shapeSelected bind:layerSelected />
 	</div>
 	<div class="content">
-		<div class="flex-row">
-			<div id="middle" class="flex-col">
-				<Canvas
-					bind:triangles
-					bind:animationsStep
-					bind:moreTriangles
-					bind:layerSelected
-					on:triangleClick={onTriangleClick}
-					bind:state
-				/>
-			</div>
+		<Canvas
+			bind:triangles
+			bind:animationsStep
+			bind:moreTriangles
+			bind:layerSelected
+			on:triangleClick={onTriangleClick}
+			bind:state
+		/>
 
-			<div id="right">
-				<Toggle bind:state />
-				{#if state === EState.EDITING}
-					<ToggleSize bind:size={editSize} />
-					<SettingButtons bind:shape={shapeSelected} />
-				{/if}
-				<Tabs bind:animations bind:animationSelected bind:layerSelected bind:shapeSelected />
-			</div>
+		<div id="right">
+			<Toggle bind:state />
+			<SettingButtons bind:shape={shapeSelected} />
+			{#if state === EState.EDITING}
+				<ToggleSize bind:size={editSize} />
+			{/if}
+			<Tabs bind:animations bind:animationSelected bind:layerSelected bind:shapeSelected />
 		</div>
 	</div>
 </div>
@@ -267,37 +262,30 @@
 <style>
 	#app {
 		display: flex;
-		height: 100%;
+		position: relative;
+		height: 90vh;
+		overflow: hidden;
 	}
 
-	#left {
-		margin-top: var(--spacing-s);
+	.left {
+		margin: var(--spacing-s);
 		width: min-content;
-		margin-bottom: var(--spacing-s);
-		margin-left: var(--spacing-s);
 	}
 
 	.content {
 		flex-grow: 1;
 		display: flex;
-		flex-direction: column;
-	}
-
-	.flex-row {
-		flex-grow: 1;
-		display: flex;
-	}
-
-	#middle {
+		flex-direction: row;
 		margin-top: var(--spacing-s);
-		flex-grow: 3;
 		margin-bottom: var(--spacing-s);
-		height: 80%;
+		margin-right: var(--spacing-s);
+		gap: var(--spacing-s);
 	}
 
 	#right {
-		width: 30%;
-		margin-left: var(--spacing-s);
-		margin-right: var(--spacing-s);
+		flex: 3;
+
+		display: flex;
+		flex-direction: column;
 	}
 </style>

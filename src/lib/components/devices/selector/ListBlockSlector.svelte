@@ -9,6 +9,8 @@
 	export let shapeSelected: IShape | undefined;
 	export let layerSelected: ILayer | undefined;
 
+	let scrollElement;
+
 	let my_session;
 
 	session.subscribe((value) => {
@@ -66,34 +68,75 @@
 			}
 		}
 	};
+
+	const scroll = (value) => {
+		// FIXME DONT WORK
+		console.log(scrollElement, 'oui');
+		if (scrollElement && scrollElement.scrollBy) {
+			return () => {
+				scrollElement.scrollBy({ top: value, behavior: 'smooth' });
+			};
+		}
+	};
 </script>
 
-<div class="blocks">
-	{#each shapes as shape}
-		<BlockSlector bind:layerSelected bind:shape bind:shapeSelected />
-	{/each}
+<div class="left-scroll">
+	<div class="button" on:click={scroll(-100)}>^</div>
 
-	<div class="new-device" on:click={onNewDeviceClick}>
-		<div class="title">
-			<div class="plus">+</div>
-			 new device
+	<div class="blocks" bind:this={scrollElement}>
+		{#each shapes as shape}
+			<BlockSlector bind:layerSelected bind:shape bind:shapeSelected />
+		{/each}
+
+		<div class="new-device" on:click={onNewDeviceClick}>
+			<div class="title">
+				<div class="plus">+</div>
+				new device
+			</div>
 		</div>
 	</div>
+
+	<div class="button" on:click={scroll(100)}>v</div>
 </div>
 
 <style>
-	.blocks {
+	.left-scroll {
+		width: 100%;
+		height: 100%;
 		background-color: var(--light-gray);
-		margin-right: var(--spacing-s);
 		border-radius: 20px;
 		padding: var(--spacing-s);
+
+		display: flex;
+		flex-direction: column;
+	}
+	.blocks::-webkit-scrollbar {
+		display: none;
+	}
+
+	.blocks {
+		flex: 1;
+		width: 100%;
+
+		overflow-y: scroll;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.button {
+		width: 100%;
+		padding: var(--spacing-s);
+		border-radius: var(--spacing-s);
+		cursor: default;
+		text-align: center;
 	}
 
 	.new-device {
 		cursor: default;
 	}
 
-	.new-device:hover {
+	.new-device:hover,
+	.button:hover {
 		transform: scale(1.04);
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}

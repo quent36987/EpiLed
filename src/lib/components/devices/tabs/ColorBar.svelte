@@ -2,14 +2,20 @@
 	import type { IModule } from '../../../../interfaces/interfaces';
 
 	export let module: IModule;
+
+	let debouncedValue = module.color.value;
+
+	const change = () => {
+		module.color.value = debouncedValue;
+	};
 </script>
 
 <div class="range-container">
-	<input type="color" bind:value={module.color.value} />
+	<input type="color" bind:value={debouncedValue} on:change={change} />
 
 	<div class="italic">
 		{module.title}
-		{module.color.value}
+		{debouncedValue}
 	</div>
 </div>
 

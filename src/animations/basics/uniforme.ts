@@ -1,4 +1,3 @@
-/* eslint-disable */
 import type { IStepAnimation, ILed, IModule } from '../../interfaces/interfaces';
 
 interface IVagueProps {
@@ -7,7 +6,7 @@ interface IVagueProps {
 
 export function createUniformAnimation(leds: ILed[], props: IVagueProps): IStepAnimation {
 	const animation: IStepAnimation = {
-		frequency: 0,
+		frequency: 1,
 		steps: []
 	};
 
