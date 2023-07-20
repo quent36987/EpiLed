@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createEventDispatcher, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import * as THREE from 'three';
 	import { Triangle } from '$lib/triangles/triangle';
 	import { InteractionManager } from 'three.interactive';
@@ -8,6 +8,7 @@
 	import { RotateLeftOutlined, RotateRightOutlined } from 'svelte-ant-design-icons';
 	import { _resizeCamera } from './utils';
 	import { generateLightColorWave } from '../../animations/utils/couleurs';
+	import { createTriangles, generateTriangles } from '$lib/triangles/utils';
 
 	export let animationsStep: IStepAnimation[];
 	export let triangles: Triangle[];
@@ -15,6 +16,7 @@
 	export let moreTriangles: Triangle[];
 	export let layerSelected: ILayer | undefined;
 	export let shapeSelected: IShape | undefined;
+	export let editSize: number;
 
 	let contenaire;
 	let canvas;
@@ -30,8 +32,6 @@
 	let renderer: THREE.WebGLRenderer;
 
 	let clicking = false;
-
-	const dispatch = createEventDispatcher();
 
 	onMount(() => {
 		scene = new THREE.Scene();
@@ -56,6 +56,41 @@
 		);
 	};
 
+	const addListeners = (triangle: Triangle, colorOver: string) => {
+		triangle.addEventListener('click', (target) => {
+			if (!clicking) {
+				clicking = true;
+				onTriangleClick(target.target.triId);
+
+				setTimeout(() => {
+					clicking = false;
+				}, 100);
+			}
+		});
+
+		triangle.addEventListener('mouseover', (target) => {
+			target.target.material.color.set(colorOver);
+			target.target.position.z = 0.001;
+		});
+
+		triangle.addEventListener('mouseout', (target) => {
+			target.target.material.color.set(triangle.color);
+			target.target.position.z = 0;
+		});
+	};
+
+	const colorLayer = (triangle: Triangle, LAYER_LENGTH: number, colorlight: string[]) => {
+		if (layerSelected.leds.includes(triangle.triId)) {
+			triangle.material.color.set('blue');
+		} else {
+			for (let i = 0; i < LAYER_LENGTH; i++) {
+				if (shapeSelected?.layers[i].leds.includes(triangle.triId)) {
+					triangle.material.color.set(colorlight[i]);
+				}
+			}
+		}
+	};
+
 	const update = () => {
 		if (!triangles || triangles.length === 0) {
 			return;
@@ -63,7 +98,6 @@
 
 		scene.clear();
 		scene.background = new THREE.Color('#e3e2e2');
-
 		interactionManager = new InteractionManager(renderer, camera, renderer.domElement);
 
 		for (const triangle of triangles) {
@@ -71,59 +105,22 @@
 			triangle.material.color.set(triangle.color);
 			interactionManager.add(triangle);
 
-			triangle.addEventListener('click', (target) => {
-				target.stopPropagation();
+			const LAYER_LENGTH = shapeSelected?.layers?.length ?? 0;
+			const colorlight = generateLightColorWave(LAYER_LENGTH);
 
-				if (!clicking) {
-					clicking = true;
-					dispatch('triangleClick', target.target.triId);
+			addListeners(triangle, 'red');
 
-					setTimeout(() => {
-						clicking = false;
-					}, 100);
-				}
-			});
-
-			triangle.addEventListener('mouseover', (target) => {
-				target.target.material.color.set('red');
-			});
-
-			triangle.addEventListener('mouseout', (target) => {
-				triangle.material.color.set(triangle.color);
-				//FIXME Duplicate code
+			triangle.addEventListener('mouseout', () => {
 				if (layerSelected && shapeSelected && state === EState.LAYERS) {
 					const LAYER_LENGTH = shapeSelected?.layers?.length ?? 0;
 					const colorlight = generateLightColorWave(LAYER_LENGTH);
-
-					if (layerSelected.leds.includes(triangle.triId)) {
-						triangle.material.color.set('blue');
-					} else {
-						for (let i = 0; i < LAYER_LENGTH; i++) {
-							if (shapeSelected?.layers[i].leds.includes(triangle.triId)) {
-								triangle.material.color.set(colorlight[i]);
-							}
-						}
-					}
+					colorLayer(triangle, LAYER_LENGTH, colorlight);
 				}
 			});
-		}
 
-		if (layerSelected && shapeSelected && state === EState.LAYERS) {
-			const LAYER_LENGTH = shapeSelected?.layers?.length ?? 0;
-
-			const colorlight = generateLightColorWave(LAYER_LENGTH);
-
-			for (const triangle of triangles) {
+			if (layerSelected && shapeSelected && state === EState.LAYERS) {
 				triangle.material.color.set(triangle.color);
-				if (layerSelected.leds.includes(triangle.triId)) {
-					triangle.material.color.set('blue');
-				} else {
-					for (let i = 0; i < LAYER_LENGTH; i++) {
-						if (shapeSelected?.layers[i].leds.includes(triangle.triId)) {
-							triangle.material.color.set(colorlight[i]);
-						}
-					}
-				}
+				colorLayer(triangle, LAYER_LENGTH, colorlight);
 			}
 		}
 
@@ -132,23 +129,15 @@
 				scene.add(triangle);
 				interactionManager.add(triangle);
 
-				triangle.addEventListener('click', (target) => {
-					dispatch('triangleClick', target.target.triId);
-					target.stopPropagation();
-				});
-
-				triangle.addEventListener('mouseover', (target) => {
-					target.target.material.color.set('blue');
-					target.target.position.z = 0.1;
-				});
-
-				triangle.addEventListener('mouseout', (target) => {
-					target.target.material.color.set(triangle.color);
-					target.target.position.z = 0;
-				});
+				addListeners(triangle, 'blue');
 			}
 		}
 
+		timecodeAnimation();
+		resizeCamera();
+	};
+
+	const timecodeAnimation = () => {
 		timecode = [];
 		maxTimecode = [];
 		for (const iStepAnimation of animationsStep) {
@@ -157,9 +146,6 @@
 				iStepAnimation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b))
 			);
 		}
-		console.log('upafte');
-
-		resizeCamera();
 	};
 
 	$: {
@@ -168,23 +154,6 @@
 		state;
 		layerSelected;
 		update();
-	}
-
-	$: {
-		// if (animation && animation.steps.length > 0) {
-		// 	maxTimecode = animation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b));
-		// }
-		animationsStep;
-		/*timecode = [];
-		maxTimecode = [];
-		for (const iStepAnimation of animationsStep) {
-			timecode.push(0);
-			maxTimecode.push(
-				iStepAnimation.steps.map((x) => x.timecode).reduce((a, b) => Math.max(a, b))
-			);
-		}*/
-
-		console.log('ici', animationsStep);
 	}
 
 	const editZoom = (value) => {
@@ -242,6 +211,82 @@
 		}, (1 / (animationsStep[0]?.frequency ?? 1000)) * 1000);
 
 		renderer.render(scene, camera);
+	};
+
+	const onTriangleClick = (triangleId: string) => {
+		if (state === EState.PAUSED || state === EState.PLAYING) return;
+
+		if (state === EState.LAYERS) {
+			if (!layerSelected || !shapeSelected) return;
+
+			const LEDS_IS_ALREADY_IN_LAYER = layerSelected.leds.includes(triangleId);
+
+			if (LEDS_IS_ALREADY_IN_LAYER) {
+				layerSelected.leds = layerSelected.leds.filter((id) => id !== triangleId);
+			} else {
+				for (const shapeSelectedElement of shapeSelected.layers) {
+					shapeSelectedElement.leds = shapeSelectedElement.leds.filter((id) => id !== triangleId);
+				}
+
+				layerSelected.leds.push(triangleId);
+			}
+
+			return;
+		}
+
+		const triangle = triangles.find((triangle) => triangle.triId === triangleId);
+
+		if (triangle && shapeSelected) {
+			// delete triangle
+			if (shapeSelected.devices.length === 1) {
+				return;
+			}
+
+			shapeSelected.devices = shapeSelected.devices.filter((device) => device.id !== triangleId);
+			shapeSelected.devices.forEach((device) => {
+				device.connected = device.connected.filter((connected) => connected.id !== triangleId);
+			});
+
+			triangles = createTriangles(shapeSelected.devices);
+			moreTriangles = generateTriangles(triangles, editSize);
+
+			shapeSelected.layers.forEach((layer) => {
+				layer.leds = layer.leds.filter((id) => id !== triangleId);
+			});
+		} else {
+			const newTriangle = moreTriangles.find((tri) => tri.triId === triangleId);
+
+			if (
+				newTriangle &&
+				shapeSelected &&
+				!shapeSelected.devices.some((device) => device.id === triangleId)
+			) {
+				shapeSelected.devices.push({
+					id: newTriangle.triId,
+					connected: [
+						{
+							id: newTriangle.triangleCreationInfo.withTriangleId,
+							pin: newTriangle.triangleCreationInfo.pinConnected
+						}
+					],
+					size: newTriangle.size
+				});
+
+				shapeSelected.devices
+					.find((device) => device.id === newTriangle.triangleCreationInfo.withTriangleId)
+					?.connected.push({
+						id: newTriangle.triId,
+						pin: newTriangle.triangleCreationInfo.inTrianglePin
+					});
+
+				newTriangle.color = 'green';
+
+				triangles = createTriangles(shapeSelected.devices);
+				moreTriangles = generateTriangles(triangles, editSize);
+
+				layerSelected?.leds.push(newTriangle.triId);
+			}
+		}
 	};
 
 	const resize = () => {
