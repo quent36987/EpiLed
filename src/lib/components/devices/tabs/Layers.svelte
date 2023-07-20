@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { ILayer } from '../../../../interfaces/interfaces';
 	import { AppstoreAddOutlined } from 'svelte-ant-design-icons';
+	import { generateLightColorWave } from '../../../../animations/utils/couleurs';
 
 	export let layers: ILayer[];
 	export let layerSelected: ILayer;
@@ -18,6 +19,16 @@
 	const onLayerSelected = (layer: ILayer) => {
 		layerSelected = layer;
 	};
+
+	const color = (i: number, selected: boolean) => {
+		const colorlight = generateLightColorWave(layers.length);
+
+		if (selected) {
+			return 'blue';
+		}
+
+		return colorlight[i];
+	};
 </script>
 
 <div>
@@ -32,8 +43,12 @@
 			class:selected={layerSelected === layer}
 			on:click={() => onLayerSelected(layer)}
 		>
-			<h3>Layer {i}</h3>
-			<p class="description">{layer.animation ? layer.animation.title : 'None animation yet'}</p>
+			<div>
+				<h3>Layer {i}</h3>
+				<p class="description">{layer.animation ? layer.animation.title : 'None animation yet'}</p>
+			</div>
+
+			<div style="background-color: {color(i, layerSelected === layer)}" class="color" />
 		</div>
 	{/each}
 </div>
@@ -48,6 +63,18 @@
 		transition: all 0.3s;
 		cursor: pointer;
 		font-family: Arial, sans-serif;
+
+		display: flex;
+		flex-direction: row;
+		gap: var(--spacing-l);
+		align-items: center;
+		justify-content: start;
+	}
+
+	.color {
+		width: 1rem;
+		height: 1rem;
+		border-radius: 50%;
 	}
 
 	.layer.selected {

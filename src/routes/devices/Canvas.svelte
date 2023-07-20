@@ -3,16 +3,18 @@
 	import * as THREE from 'three';
 	import { Triangle } from '$lib/triangles/triangle';
 	import { InteractionManager } from 'three.interactive';
-	import type { ILayer, IStepAnimation } from '../../interfaces/interfaces';
+	import type { ILayer, IShape, IStepAnimation } from '../../interfaces/interfaces';
 	import { EState } from '../../interfaces/enums';
 	import { RotateLeftOutlined, RotateRightOutlined } from 'svelte-ant-design-icons';
 	import { _resizeCamera } from './utils';
+	import { generateLightColorWave } from '../../animations/utils/couleurs';
 
 	export let animationsStep: IStepAnimation[];
 	export let triangles: Triangle[];
 	export let state: EState;
 	export let moreTriangles: Triangle[];
-	export let layerSelected: ILayer;
+	export let layerSelected: ILayer | undefined;
+	export let shapeSelected: IShape | undefined;
 
 	let contenaire;
 	let canvas;
@@ -65,15 +67,8 @@
 		interactionManager = new InteractionManager(renderer, camera, renderer.domElement);
 
 		for (const triangle of triangles) {
-			if (layerSelected && state === EState.LAYERS) {
-				if (layerSelected.leds.includes(triangle.triId)) {
-					triangle.material.color.set('blue');
-				} else {
-					triangle.material.color.set(triangle.color);
-				}
-			}
-
 			scene.add(triangle);
+			triangle.material.color.set(triangle.color);
 			interactionManager.add(triangle);
 
 			triangle.addEventListener('click', (target) => {
@@ -94,13 +89,42 @@
 			});
 
 			triangle.addEventListener('mouseout', (target) => {
-				const IN_LAYER =
-					layerSelected &&
-					state === EState.LAYERS &&
-					layerSelected.leds.includes(target.target.triId);
+				triangle.material.color.set(triangle.color);
+				//FIXME Duplicate code
+				if (layerSelected && shapeSelected && state === EState.LAYERS) {
+					const LAYER_LENGTH = shapeSelected?.layers?.length ?? 0;
+					const colorlight = generateLightColorWave(LAYER_LENGTH);
 
-				target.target.material.color.set(IN_LAYER ? 'blue' : triangle.color);
+					if (layerSelected.leds.includes(triangle.triId)) {
+						triangle.material.color.set('blue');
+					} else {
+						for (let i = 0; i < LAYER_LENGTH; i++) {
+							if (shapeSelected?.layers[i].leds.includes(triangle.triId)) {
+								triangle.material.color.set(colorlight[i]);
+							}
+						}
+					}
+				}
 			});
+		}
+
+		if (layerSelected && shapeSelected && state === EState.LAYERS) {
+			const LAYER_LENGTH = shapeSelected?.layers?.length ?? 0;
+
+			const colorlight = generateLightColorWave(LAYER_LENGTH);
+
+			for (const triangle of triangles) {
+				triangle.material.color.set(triangle.color);
+				if (layerSelected.leds.includes(triangle.triId)) {
+					triangle.material.color.set('blue');
+				} else {
+					for (let i = 0; i < LAYER_LENGTH; i++) {
+						if (shapeSelected?.layers[i].leds.includes(triangle.triId)) {
+							triangle.material.color.set(colorlight[i]);
+						}
+					}
+				}
+			}
 		}
 
 		if (state == EState.EDITING) {

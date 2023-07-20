@@ -14,6 +14,7 @@
 	import { session } from '../../store/store';
 	import { ANIMATIONS } from '../../data/data';
 	import { UniformAnimationsDuration } from '../../animations/utils/decoupe';
+	import { createConfig } from '../../animations/utils/modules';
 
 	let shapes: IShape[] = [];
 	let triangles: Triangle[] = [];
@@ -36,18 +37,6 @@
 			refresh = true;
 		}
 	});
-
-	let createConfig = (modules) => {
-		let config = {};
-
-		modules.forEach((module) => {
-			if (module.range) config[module.name] = module.range.value;
-			else if (module.color) config[module.name] = module.color.value;
-			else if (module.toggle) config[module.name] = module.toggle.value;
-		});
-
-		return config;
-	};
 
 	$: {
 		refresh;
@@ -246,6 +235,7 @@
 			bind:layerSelected
 			on:triangleClick={onTriangleClick}
 			bind:state
+			bind:shapeSelected
 		/>
 
 		<div id="right">
