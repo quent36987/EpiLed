@@ -108,9 +108,23 @@
 			const LAYER_LENGTH = shapeSelected?.layers?.length ?? 0;
 			const colorlight = generateLightColorWave(LAYER_LENGTH);
 
-			addListeners(triangle, 'red');
+			triangle.addEventListener('click', (target) => {
+				if (!clicking) {
+					clicking = true;
+					onTriangleClick(target.target.triId);
+
+					setTimeout(() => {
+						clicking = false;
+					}, 100);
+				}
+			});
+
+			triangle.addEventListener('mouseover', (target) => {
+				target.target.material.color.set('red');
+			});
 
 			triangle.addEventListener('mouseout', () => {
+				triangle.material.color.set(triangle.color);
 				if (layerSelected && shapeSelected && state === EState.LAYERS) {
 					const LAYER_LENGTH = shapeSelected?.layers?.length ?? 0;
 					const colorlight = generateLightColorWave(LAYER_LENGTH);
@@ -129,7 +143,20 @@
 				scene.add(triangle);
 				interactionManager.add(triangle);
 
-				addListeners(triangle, 'blue');
+				triangle.addEventListener('click', (target) => {
+					onTriangleClick(target.target.triId);
+					target.stopPropagation();
+				});
+
+				triangle.addEventListener('mouseover', (target) => {
+					target.target.material.color.set('blue');
+					target.target.position.z = 0.1;
+				});
+
+				triangle.addEventListener('mouseout', (target) => {
+					target.target.material.color.set(triangle.color);
+					target.target.position.z = 0;
+				});
 			}
 		}
 
