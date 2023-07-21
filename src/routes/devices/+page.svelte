@@ -5,7 +5,7 @@
 	import { Triangle } from '$lib/triangles/triangle';
 	import { createTriangles, generateTriangles } from '$lib/triangles/utils';
 	import { onMount } from 'svelte';
-	import Canvas from './Canvas.svelte';
+	import Canvas from '$lib/components/devices/canvas/Canvas.svelte';
 	import { EState } from '../../interfaces/enums';
 	import Toggle from '$lib/components/devices/Toggle.svelte';
 	import ToggleSize from '$lib/components/devices/ToggleSize.svelte';

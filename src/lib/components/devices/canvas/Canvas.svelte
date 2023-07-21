@@ -3,12 +3,12 @@
 	import * as THREE from 'three';
 	import { Triangle } from '$lib/triangles/triangle';
 	import { InteractionManager } from 'three.interactive';
-	import type { ILayer, IShape, IStepAnimation } from '../../interfaces/interfaces';
-	import { EState } from '../../interfaces/enums';
-	import { RotateLeftOutlined, RotateRightOutlined } from 'svelte-ant-design-icons';
-	import { _resizeCamera } from './utils';
-	import { generateLightColorWave } from '../../animations/utils/couleurs';
+	import type { ILayer, IShape, IStepAnimation } from '../../../../interfaces/interfaces';
+	import { EState } from '../../../../interfaces/enums';
+	import { _resizeCamera, addOrRemoveTriangleToLayer, addTriangle, removeTriangle } from './utils';
+	import { generateLightColorWave } from '../../../../animations/utils/couleurs';
 	import { createTriangles, generateTriangles } from '$lib/triangles/utils';
+	import CanvasSettings from '$lib/components/devices/canvas/CanvasSettings.svelte';
 
 	export let animationsStep: IStepAnimation[];
 	export let triangles: Triangle[];
@@ -54,29 +54,6 @@
 			triangles,
 			state == EState.EDITING ? moreTriangles : []
 		);
-	};
-
-	const addListeners = (triangle: Triangle, colorOver: string) => {
-		triangle.addEventListener('click', (target) => {
-			if (!clicking) {
-				clicking = true;
-				onTriangleClick(target.target.triId);
-
-				setTimeout(() => {
-					clicking = false;
-				}, 100);
-			}
-		});
-
-		triangle.addEventListener('mouseover', (target) => {
-			target.target.material.color.set(colorOver);
-			target.target.position.z = 0.001;
-		});
-
-		triangle.addEventListener('mouseout', (target) => {
-			target.target.material.color.set(triangle.color);
-			target.target.position.z = 0;
-		});
 	};
 
 	const colorLayer = (triangle: Triangle, LAYER_LENGTH: number, colorlight: string[]) => {
@@ -160,11 +137,11 @@
 			}
 		}
 
-		timecodeAnimation();
+		resetTimecodeAnimation();
 		resizeCamera();
 	};
 
-	const timecodeAnimation = () => {
+	const resetTimecodeAnimation = () => {
 		timecode = [];
 		maxTimecode = [];
 		for (const iStepAnimation of animationsStep) {
@@ -183,15 +160,9 @@
 		update();
 	}
 
-	const editZoom = (value) => {
-		camera.position.z = camera.position.z + value;
-		zoom += value;
-	};
-
 	const animate = () => {
 		if (state == EState.PAUSED) {
 			requestAnimationFrame(animate);
-
 			renderer.render(scene, camera);
 			return;
 		}
@@ -216,9 +187,7 @@
 				const step = animationsStep[i].steps.filter((x) => x.timecode === timecode[i]);
 
 				for (const s of step) {
-					const ids = s.ids;
-
-					for (const id of ids) {
+					s.ids.forEach((id) => {
 						const tri = triangles.filter((x) => x.triId === id)[0];
 
 						if (tri) {
@@ -226,7 +195,7 @@
 								color: s.colors
 							});
 						}
-					}
+					});
 				}
 			}
 
@@ -244,35 +213,13 @@
 		if (state === EState.PAUSED || state === EState.PLAYING) return;
 
 		if (state === EState.LAYERS) {
-			if (!layerSelected || !shapeSelected) return;
-
-			const LEDS_IS_ALREADY_IN_LAYER = layerSelected.leds.includes(triangleId);
-
-			if (LEDS_IS_ALREADY_IN_LAYER) {
-				layerSelected.leds = layerSelected.leds.filter((id) => id !== triangleId);
-			} else {
-				for (const shapeSelectedElement of shapeSelected.layers) {
-					shapeSelectedElement.leds = shapeSelectedElement.leds.filter((id) => id !== triangleId);
-				}
-
-				layerSelected.leds.push(triangleId);
-			}
-
-			return;
+			addOrRemoveTriangleToLayer(triangleId, layerSelected, shapeSelected);
 		}
 
 		const triangle = triangles.find((triangle) => triangle.triId === triangleId);
 
 		if (triangle && shapeSelected) {
-			// delete triangle
-			if (shapeSelected.devices.length === 1) {
-				return;
-			}
-
-			shapeSelected.devices = shapeSelected.devices.filter((device) => device.id !== triangleId);
-			shapeSelected.devices.forEach((device) => {
-				device.connected = device.connected.filter((connected) => connected.id !== triangleId);
-			});
+			removeTriangle(triangleId, shapeSelected);
 
 			triangles = createTriangles(shapeSelected.devices);
 			moreTriangles = generateTriangles(triangles, editSize);
@@ -281,37 +228,9 @@
 				layer.leds = layer.leds.filter((id) => id !== triangleId);
 			});
 		} else {
-			const newTriangle = moreTriangles.find((tri) => tri.triId === triangleId);
-
-			if (
-				newTriangle &&
-				shapeSelected &&
-				!shapeSelected.devices.some((device) => device.id === triangleId)
-			) {
-				shapeSelected.devices.push({
-					id: newTriangle.triId,
-					connected: [
-						{
-							id: newTriangle.triangleCreationInfo.withTriangleId,
-							pin: newTriangle.triangleCreationInfo.pinConnected
-						}
-					],
-					size: newTriangle.size
-				});
-
-				shapeSelected.devices
-					.find((device) => device.id === newTriangle.triangleCreationInfo.withTriangleId)
-					?.connected.push({
-						id: newTriangle.triId,
-						pin: newTriangle.triangleCreationInfo.inTrianglePin
-					});
-
-				newTriangle.color = 'green';
-
+			if (shapeSelected && addTriangle(triangleId, shapeSelected, moreTriangles, layerSelected)) {
 				triangles = createTriangles(shapeSelected.devices);
 				moreTriangles = generateTriangles(triangles, editSize);
-
-				layerSelected?.leds.push(newTriangle.triId);
 			}
 		}
 	};
@@ -321,30 +240,11 @@
 		camera.aspect = contenaire.clientWidth / contenaire.clientHeight;
 		camera.updateProjectionMatrix();
 	};
-
-	const rotate = (value) => {
-		const angle = THREE.MathUtils.degToRad(value);
-		scene.rotation.z += angle;
-		sceneRotation += angle;
-		resizeCamera();
-	};
 </script>
 
 <div id="container" bind:this={contenaire} class="height-100">
-	<canvas bind:this={canvas} class="test" />
-
-	<div class="zooms">
-		<div class="zoom" on:click={() => rotate(-5)}>
-			<RotateRightOutlined />
-		</div>
-
-		<div class="zoom" on:click={() => rotate(5)}>
-			<RotateLeftOutlined />
-		</div>
-
-		<div class="zoom" on:click={() => editZoom(-1)}>+</div>
-		<div class="zoom" on:click={() => editZoom(1)}>-</div>
-	</div>
+	<canvas bind:this={canvas} class="canvas" />
+	<CanvasSettings bind:zoom bind:camera {resizeCamera} bind:scene bind:sceneRotation />
 </div>
 
 <style>
@@ -354,33 +254,7 @@
 		flex: 5;
 	}
 
-	.test {
+	.canvas {
 		border-radius: 25px;
-	}
-
-	.zooms {
-		position: absolute;
-		bottom: 0;
-		right: 10px;
-		display: flex;
-		flex-direction: row;
-		z-index: 5;
-	}
-
-	.zoom {
-		cursor: default;
-		background-color: var(--bg-color);
-		border-radius: 50%;
-		width: 30px;
-		height: 30px;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		margin: 5px;
-	}
-
-	.zoom:hover {
-		transform: scale(1.1);
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 </style>

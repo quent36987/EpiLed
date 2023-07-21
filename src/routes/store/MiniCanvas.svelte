@@ -2,7 +2,7 @@
 	import { Triangle } from '$lib/triangles/triangle';
 	import { onMount } from 'svelte';
 	import * as THREE from 'three';
-	import { _resizeCamera } from '../devices/utils';
+	import { _resizeCamera } from '$lib/components/devices/canvas/utils';
 
 	export let triangles: Triangle[];
 	let contenaire;
@@ -66,7 +66,7 @@
 </script>
 
 <div id="container" bind:this={contenaire} class="height-100">
-	<canvas bind:this={canvas} class="test" />
+	<canvas bind:this={canvas} class="canvas" />
 </div>
 
 <style>
