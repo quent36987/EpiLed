@@ -21,7 +21,6 @@ export const getShapes = async (my_session: Session, animations: IAnimation[]) =
 			});
 		});
 
-		console.log('data get supabase', data);
 		return data;
 	} catch (error) {
 		if (error instanceof Error) {

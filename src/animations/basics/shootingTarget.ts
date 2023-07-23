@@ -37,6 +37,7 @@ export function createShootingTargetAnimation(
 		);
 
 		let time = 0;
+		if (ledsInPart.length === 0) continue;
 
 		for (let c = 0; c < props.colorCount; c++) {
 			animation.steps.push({

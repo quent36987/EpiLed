@@ -1,6 +1,6 @@
 import type { IStepAnimation, ILed, IModule } from '../../interfaces/interfaces';
 import { generateColorWave } from '../utils/couleurs';
-import {getCircularPart} from "../utils/decoupe";
+import { getCircularPart } from '../utils/decoupe';
 
 export interface ICircularProps {
 	frequency: number;
@@ -19,14 +19,15 @@ export function createCircularAnimation(leds: ILed[], props: ICircularProps): IS
 
 	const colors = generateColorWave(props.colorCount, props.firstColor, props.endColor);
 
-    const centerX = leds.reduce((acc, led) => acc + led.position[0], 0) / leds.length;
-    const centerY = leds.reduce((acc, led) => acc + led.position[1], 0) / leds.length;
+	const centerX = leds.reduce((acc, led) => acc + led.position[0], 0) / leds.length;
+	const centerY = leds.reduce((acc, led) => acc + led.position[1], 0) / leds.length;
 
 	for (let part = 0; part <= props.partCount; part++) {
 		const ledsInPart = getCircularPart(leds, props.partCount, part, centerX, centerY);
 
 		let time = 0;
 
+		if (ledsInPart.length === 0) continue;
 		for (let c = 0; c < props.colorCount; c++) {
 			animation.steps.push({
 				ids: ledsInPart.map((led) => led.id),

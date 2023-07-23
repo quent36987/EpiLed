@@ -40,10 +40,11 @@ export function createSnakeAnimation(
 	while (tmpLed.length > 0) {
 		let time = 0;
 
+		const ledsInPart = tmpLed.filter((led) => allledIds.includes(led));
+		if (ledsInPart.length === 0) continue;
 		for (let c = props.colorCount; c >= 0; c--) {
-
 			animation.steps.push({
-				ids: tmpLed.filter((led) => allledIds.includes(led)),
+				ids: ledsInPart,
 				timecode: time,
 				colors: colors[(c + part * props.colorCountBetweenStep) % props.colorCount]
 			});

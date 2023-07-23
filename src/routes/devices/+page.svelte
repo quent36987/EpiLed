@@ -111,7 +111,7 @@
 			{#if state === EState.EDITING}
 				<ToggleSize bind:size={editSize} />
 			{/if}
-			<Tabs bind:animations bind:animationSelected bind:layerSelected bind:shapeSelected />
+			<Tabs bind:animations bind:layerSelected bind:shapeSelected />
 		</div>
 	</div>
 </div>

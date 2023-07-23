@@ -38,7 +38,6 @@ export function biggerAnimation(animation: IStepAnimation, nbStep: number): ISte
 
 	let nbReplay = 1;
 	const timecodeMax = sortedSteps[sortedSteps.length - 1].timecode + 1;
-	console.log('timecodeMax', timecodeMax);
 
 	const newSteps: IStep[] = [...animation.steps];
 	let i = 0;
@@ -103,9 +102,7 @@ export function UniformAnimationsDuration(animations: IStepAnimation[]): IStepAn
 		animationsSorted.push(sortAnimation(animation));
 	}
 
-	const { maxDuration, maxFrequency, timecode } = findLongestAnimation(animationsSorted);
-
-	console.log(maxDuration, maxFrequency, timecode, animationsSorted);
+	const { maxFrequency } = findLongestAnimation(animationsSorted);
 
 	const allAnimation: IStepAnimation[] = [];
 

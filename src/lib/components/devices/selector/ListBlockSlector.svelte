@@ -71,7 +71,6 @@
 
 	const scroll = (value) => {
 		// FIXME DONT WORK
-		console.log(scrollElement, 'oui');
 		if (scrollElement && scrollElement.scrollBy) {
 			return () => {
 				scrollElement.scrollBy({ top: value, behavior: 'smooth' });
@@ -81,7 +80,7 @@
 </script>
 
 <div class="left-scroll">
-	<div class="button" on:click={scroll(-100)}>^</div>
+	<div class="button" on:click={() => scroll(-100)}>^</div>
 
 	<div class="blocks" bind:this={scrollElement}>
 		{#each shapes as shape}
@@ -96,7 +95,7 @@
 		</div>
 	</div>
 
-	<div class="button" on:click={scroll(100)}>v</div>
+	<div class="button" on:click={() => scroll(100)}>v</div>
 </div>
 
 <style>

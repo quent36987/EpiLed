@@ -13,6 +13,7 @@
 		LogoutOutlined,
 		ProfileOutlined
 	} from 'svelte-ant-design-icons';
+	import { addInfoToast } from '$lib/components/toast/toast';
 
 	let my_session = null;
 	session.subscribe((value) => {
@@ -20,6 +21,11 @@
 	});
 
 	onMount(() => {
+		if (!supabase) {
+			addInfoToast('You are not connected to the internet.');
+			return;
+		}
+
 		supabase.auth.getSession().then(({ data }) => {
 			console.log(data);
 			session.set(data.session);

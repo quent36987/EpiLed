@@ -25,6 +25,7 @@ export function createWaveAnimation(leds: ILed[], props: IWaveProps): IStepAnima
 
 		let time = 0;
 
+		if (ledsInPart.length === 0) continue;
 		for (let c = 0; c < props.colorCount; c++) {
 			animation.steps.push({
 				ids: ledsInPart.map((led) => led.id),

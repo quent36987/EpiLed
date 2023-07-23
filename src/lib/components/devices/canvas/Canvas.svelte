@@ -35,7 +35,7 @@
 
 	onMount(() => {
 		scene = new THREE.Scene();
-		scene.background = new THREE.Color('var(--light-gray)');
+		scene.background = new THREE.Color('#ddd');
 		camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 		window.addEventListener('resize', resize);
 
