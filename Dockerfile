@@ -3,14 +3,11 @@ FROM node:18-alpine AS builder
 WORKDIR /app
 
 COPY package.json ./
-
+COPY package-lock.json ./
 RUN npm install
-
-COPY . .
-
+COPY . ./
 RUN npm run build
 
+ENV HOST=0.0.0.0
 EXPOSE 4173
-
-#CMD ["node", "build"]
-CMD ["npm", "run", "preview"]
+CMD ["npm","run", "preview","--", "--host", "0.0.0.0"]

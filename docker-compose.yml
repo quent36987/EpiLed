@@ -6,5 +6,5 @@ services:
     container_name: epi-led
     restart: unless-stopped
     ports:
-      - "4173:4173"
+      - "80:4173"
 
