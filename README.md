@@ -18,7 +18,15 @@ npm run dev
 npm run dev -- --open
 ```
 
+or with Dockerfile et docker-compose.yml
+```bash
+docker-compose up -d
+```
+
+
 ## Building
+```bash
+
 
 To create a production version of your app:
 
